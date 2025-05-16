@@ -83,4 +83,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'cookpad-app-clone-c8f24.firebasestorage.app',
     measurementId: 'G-FHY9LYN566',
   );
+
 }

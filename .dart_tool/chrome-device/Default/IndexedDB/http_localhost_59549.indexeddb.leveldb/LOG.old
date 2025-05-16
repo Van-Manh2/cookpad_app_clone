@@ -1,0 +1,26 @@
+2025/05/14-21:55:34.556 16a4 Reusing MANIFEST C:\Users\ADMIN\AppData\Local\Temp\flutter_tools.5be0127f\flutter_tools_chrome_device.b2c9fd9\Default\IndexedDB\http_localhost_59549.indexeddb.leveldb/MANIFEST-000001
+2025/05/14-21:55:34.556 16a4 Recovering log #4
+2025/05/14-21:55:34.557 16a4 Reusing old log C:\Users\ADMIN\AppData\Local\Temp\flutter_tools.5be0127f\flutter_tools_chrome_device.b2c9fd9\Default\IndexedDB\http_localhost_59549.indexeddb.leveldb/000004.log 
+2025/05/14-21:55:34.566 2e04 Level-0 table #8: started
+2025/05/14-21:55:34.571 2e04 Level-0 table #8: 1900 bytes OK
+2025/05/14-21:55:34.574 2e04 Delete type=0 #4
+2025/05/14-21:55:34.576 16a4 Manual compaction at level-0 from '\x00\x04\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00\x05\x00\x00\x00' @ 0 : 0; will stop at (end)
+2025/05/14-22:07:22.452 2e04 Level-0 table #10: started
+2025/05/14-22:07:22.457 2e04 Level-0 table #10: 371 bytes OK
+2025/05/14-22:07:22.461 2e04 Delete type=0 #7
+2025/05/14-22:07:22.462 16a4 Manual compaction at level-0 from (begin) .. (end); will stop at '\x00\x02\x01\x02\x01\x05\x00_\x00_\x00s\x00a\x00k' @ 151 : 1
+2025/05/14-22:07:22.463 16a4 Compacting 1@0 + 1@1 files
+2025/05/14-22:07:22.465 16a4 Generated table #11@0: 47 keys, 1267 bytes
+2025/05/14-22:07:22.466 16a4 Compacted 1@0 + 1@1 files => 1267 bytes
+2025/05/14-22:07:22.468 16a4 compacted to: files[ 0 1 1 0 0 0 0 ]
+2025/05/14-22:07:22.470 16a4 Delete type=2 #8
+2025/05/14-22:07:22.470 16a4 Delete type=2 #10
+2025/05/14-22:07:22.471 16a4 Manual compaction at level-0 from '\x00\x02\x01\x02\x01\x05\x00_\x00_\x00s\x00a\x00k' @ 151 : 1 .. (end); will stop at (end)
+2025/05/14-22:07:22.471 16a4 Manual compaction at level-1 from (begin) .. (end); will stop at '\x00\x03\x01\x02\x013\x00[\x00D\x00E\x00F\x00A\x00U\x00L\x00T\x00]\x00!\x001\x00:\x007\x000\x000\x000\x004\x008\x007\x003\x001\x008\x009\x000\x00:\x00w\x00e\x00b\x00:\x004\x001\x00f\x00b\x003\x006\x004\x00e\x003\x007\x006\x007\x00f\x006\x006\x004\x00b\x001\x006\x00a\x006\x00b' @ 122 : 1
+2025/05/14-22:07:22.471 16a4 Compacting 1@1 + 1@2 files
+2025/05/14-22:07:22.475 16a4 Generated table #12@1: 33 keys, 1107 bytes
+2025/05/14-22:07:22.475 16a4 Compacted 1@1 + 1@2 files => 1107 bytes
+2025/05/14-22:07:22.477 16a4 compacted to: files[ 0 0 1 0 0 0 0 ]
+2025/05/14-22:07:22.477 16a4 Delete type=2 #5
+2025/05/14-22:07:22.478 16a4 Delete type=2 #11
+2025/05/14-22:07:22.479 16a4 Manual compaction at level-1 from '\x00\x03\x01\x02\x013\x00[\x00D\x00E\x00F\x00A\x00U\x00L\x00T\x00]\x00!\x001\x00:\x007\x000\x000\x000\x004\x008\x007\x003\x001\x008\x009\x000\x00:\x00w\x00e\x00b\x00:\x004\x001\x00f\x00b\x003\x006\x004\x00e\x003\x007\x006\x007\x00f\x006\x006\x004\x00b\x001\x006\x00a\x006\x00b' @ 122 : 1 .. (end); will stop at (end)
