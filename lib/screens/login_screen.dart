@@ -43,8 +43,10 @@ class LoginScreen extends StatelessWidget {
                     onPressed: () async {
                       final userCredential = await authService.signInGoogle();
                       if (userCredential != null) {
+                        // ignore: use_build_context_synchronously
                         context.go('/home');
                       } else {
+                        // ignore: use_build_context_synchronously
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text('Đăng nhập thất bại')),
                         );

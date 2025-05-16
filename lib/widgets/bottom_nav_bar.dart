@@ -19,19 +19,27 @@ class BottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BottomNavigationBar(
-      
-      currentIndex: currentIndex,
-      onTap: (index) => _onTap(context, index),
-      backgroundColor: Colors.black,
-      selectedItemColor: Colors.white,
-      unselectedItemColor: Colors.grey,
-      type: BottomNavigationBarType.fixed,
-      items: [
-        BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Tìm kiếm'),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.book_outlined),
-          label: 'Kho món ngon của bạn',
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        Divider(color: Colors.white, height: 1),
+        BottomNavigationBar(
+          currentIndex: currentIndex,
+          onTap: (index) => _onTap(context, index),
+          backgroundColor: Colors.black,
+          selectedItemColor: Colors.white,
+          unselectedItemColor: Colors.grey,
+          type: BottomNavigationBarType.fixed,
+          items: [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.search),
+              label: 'Tìm kiếm',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.book_outlined),
+              label: 'Kho món ngon của bạn',
+            ),
+          ],
         ),
       ],
     );

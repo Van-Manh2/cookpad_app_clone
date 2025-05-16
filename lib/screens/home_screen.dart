@@ -278,7 +278,10 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: BottomNavBar(currentIndex: 0),
+      bottomNavigationBar: SizedBox(
+        height: 80,
+        child: BottomNavBar(currentIndex: 0),
+      ),
     );
   }
 }
