@@ -1,15 +1,9 @@
 import 'package:cookpad_app_clone/screens/login_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
-
-  Future<void> _toLoginScreen(context) async {
-    await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => LoginScreen()),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +48,9 @@ class WelcomeScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      onPressed: () => _toLoginScreen(context),
+                      onPressed: () {
+                        context.go('/login');
+                      },
                       child: const Text(
                         'Đăng ký hoặc Đăng nhập',
                         style: TextStyle(color: Colors.white, fontSize: 16),
@@ -64,7 +60,7 @@ class WelcomeScreen extends StatelessWidget {
                   const SizedBox(height: 20),
                   TextButton(
                     onPressed: () {
-                      // TODO: chuyển vào app mà không đăng nhập
+                      context.go('/home');
                     },
                     child: const Text(
                       'Để sau',
@@ -83,7 +79,6 @@ class WelcomeScreen extends StatelessWidget {
                       Text('Việt Nam', style: TextStyle(color: Colors.white)),
                     ],
                   ),
-                  const SizedBox(height: 60),
                 ],
               ),
             ],
