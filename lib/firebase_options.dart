@@ -39,49 +39,58 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyDcdheE8cufW0160mLGq591DF15WFy04t8',
-    appId: '1:700048731890:web:41fb364e3767f664b16a6b',
-    messagingSenderId: '700048731890',
-    projectId: 'cookpad-app-clone-c8f24',
-    authDomain: 'cookpad-app-clone-c8f24.firebaseapp.com',
-    storageBucket: 'cookpad-app-clone-c8f24.firebasestorage.app',
-    measurementId: 'G-EV8HLCBQ05',
+    apiKey: 'AIzaSyDfNnQuW_fuxOL8OJc8tefZHXuq_59M_mg',
+    appId: '1:1023988252381:web:6007047f75c477f5e1a534',
+    messagingSenderId: '1023988252381',
+    projectId: 'cookpab-a0bf8',
+    authDomain: 'cookpab-a0bf8.firebaseapp.com',
+    databaseURL: 'https://cookpab-a0bf8-default-rtdb.asia-southeast1.firebasedatabase.app',
+    storageBucket: 'cookpab-a0bf8.firebasestorage.app',
+    measurementId: 'G-8M6S15T09G',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDTE58ooaxXRCo5_dQbaVYvYvzHE6ZLCBU',
-    appId: '1:700048731890:android:bd29685498acbee6b16a6b',
-    messagingSenderId: '700048731890',
-    projectId: 'cookpad-app-clone-c8f24',
-    storageBucket: 'cookpad-app-clone-c8f24.firebasestorage.app',
+    apiKey: 'AIzaSyDFW7v8pVap4T_HR6xS71Y2do9XOmB2m5c',
+    appId: '1:1023988252381:android:93539f6ce25e466fe1a534',
+    messagingSenderId: '1023988252381',
+    projectId: 'cookpab-a0bf8',
+    databaseURL: 'https://cookpab-a0bf8-default-rtdb.asia-southeast1.firebasedatabase.app',
+    storageBucket: 'cookpab-a0bf8.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyBt6xo9psdBw2csvRke27jAuSgBzMROJTw',
-    appId: '1:700048731890:ios:3d1f19938db926aeb16a6b',
-    messagingSenderId: '700048731890',
-    projectId: 'cookpad-app-clone-c8f24',
-    storageBucket: 'cookpad-app-clone-c8f24.firebasestorage.app',
+    apiKey: 'AIzaSyDaCqgWzNlXkU9qmNCFIBlyaK1pblQbkr8',
+    appId: '1:1023988252381:ios:0056005c6e48fc96e1a534',
+    messagingSenderId: '1023988252381',
+    projectId: 'cookpab-a0bf8',
+    databaseURL: 'https://cookpab-a0bf8-default-rtdb.asia-southeast1.firebasedatabase.app',
+    storageBucket: 'cookpab-a0bf8.firebasestorage.app',
+    androidClientId: '1023988252381-j72sovejp1tdv2d12g414td6q4bhf30m.apps.googleusercontent.com',
+    iosClientId: '1023988252381-07s5c46joqom2tvfe2t5ecj6q99jr1im.apps.googleusercontent.com',
     iosBundleId: 'com.example.cookpadAppClone',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyBt6xo9psdBw2csvRke27jAuSgBzMROJTw',
-    appId: '1:700048731890:ios:3d1f19938db926aeb16a6b',
-    messagingSenderId: '700048731890',
-    projectId: 'cookpad-app-clone-c8f24',
-    storageBucket: 'cookpad-app-clone-c8f24.firebasestorage.app',
+    apiKey: 'AIzaSyDaCqgWzNlXkU9qmNCFIBlyaK1pblQbkr8',
+    appId: '1:1023988252381:ios:0056005c6e48fc96e1a534',
+    messagingSenderId: '1023988252381',
+    projectId: 'cookpab-a0bf8',
+    databaseURL: 'https://cookpab-a0bf8-default-rtdb.asia-southeast1.firebasedatabase.app',
+    storageBucket: 'cookpab-a0bf8.firebasestorage.app',
+    androidClientId: '1023988252381-j72sovejp1tdv2d12g414td6q4bhf30m.apps.googleusercontent.com',
+    iosClientId: '1023988252381-07s5c46joqom2tvfe2t5ecj6q99jr1im.apps.googleusercontent.com',
     iosBundleId: 'com.example.cookpadAppClone',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyDcdheE8cufW0160mLGq591DF15WFy04t8',
-    appId: '1:700048731890:web:8e3cefc4d2a43814b16a6b',
-    messagingSenderId: '700048731890',
-    projectId: 'cookpad-app-clone-c8f24',
-    authDomain: 'cookpad-app-clone-c8f24.firebaseapp.com',
-    storageBucket: 'cookpad-app-clone-c8f24.firebasestorage.app',
-    measurementId: 'G-FHY9LYN566',
+    apiKey: 'AIzaSyDfNnQuW_fuxOL8OJc8tefZHXuq_59M_mg',
+    appId: '1:1023988252381:web:58f0705832dc5873e1a534',
+    messagingSenderId: '1023988252381',
+    projectId: 'cookpab-a0bf8',
+    authDomain: 'cookpab-a0bf8.firebaseapp.com',
+    databaseURL: 'https://cookpab-a0bf8-default-rtdb.asia-southeast1.firebasedatabase.app',
+    storageBucket: 'cookpab-a0bf8.firebasestorage.app',
+    measurementId: 'G-F7F5PXQ0TJ',
   );
 
 }

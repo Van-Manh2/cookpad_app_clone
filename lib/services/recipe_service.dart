@@ -5,35 +5,45 @@ class RecipeService {
   final CollectionReference _recipeCollection = FirebaseFirestore.instance
       .collection('recipes');
 
-  Future<List<String>> getPopularCategories({int top = 8}) async {
+  Future<List<Recipe>> getAllRecipes() async {
     final snapshot = await _recipeCollection.get();
-
-    final Map<String, int> categorySearchCount = {};
-
-    for (dynamic doc in snapshot.docs) {
-      final data = doc.data() as Map<String, dynamic>;
-      final category = data['category'] ?? 'Khác';
-      final searchCount = (data['searchCount'] ?? 0) as num;
-
-      categorySearchCount[category] =
-          (categorySearchCount[category] ?? 0) + searchCount.toInt();
-    }
-
-    final sortedCategories =
-        categorySearchCount.entries.toList()
-          ..sort((a, b) => b.value.compareTo(a.value));
-
-    return sortedCategories.take(top).map((e) => e.key).toList();
+    return snapshot.docs.map((doc) => Recipe.fromFirestore(doc)).toList();
   }
 
-  Future<List<Recipe>> getRecipesOfPopularCategories({int top = 8}) async {
-    final topCategories = await getPopularCategories(top: top);
-    if (topCategories.isEmpty) return [];
-
+  Future<List<Recipe>> getRecipesByKeyword(String keyword) async {
     final snapshot =
-        await _recipeCollection.where('category', whereIn: topCategories).get();
-
+        await _recipeCollection.where('keywords', arrayContains: keyword).get();
     return snapshot.docs.map((doc) => Recipe.fromFirestore(doc)).toList();
+  }
+
+  Future<List<Recipe>> getRecipesByCategoryId(String categoryId) async {
+    final snapshot =
+        await _recipeCollection
+            .where('categoryId', isEqualTo: categoryId)
+            .get();
+    return snapshot.docs.map((doc) => Recipe.fromFirestore(doc)).toList();
+  }
+
+  Future<void> addRecipe(Recipe recipe) async {
+    await _recipeCollection.add({
+      'title': recipe.name,
+      'imageUrl': recipe.imageUrl,
+      'author': recipe.author,
+      'keywords': recipe.keywords,
+    });
+  }
+
+  Future<void> updateRecipe(String id, Recipe recipe) async {
+    await _recipeCollection.doc(id).update({
+      'title': recipe.name,
+      'imageUrl': recipe.imageUrl,
+      'author': recipe.author,
+      'keywords': recipe.keywords,
+    });
+  }
+
+  Future<void> deleteRecipe(String id) async {
+    await _recipeCollection.doc(id).delete();
   }
 
   Future<List<Recipe>> getRecentlyAddedRecipes() async {
@@ -41,7 +51,7 @@ class RecipeService {
       final snapshot =
           await _recipeCollection
               .orderBy('createdAt', descending: true)
-              .limit(10)
+              .limit(8)
               .get();
 
       return snapshot.docs.map((doc) => Recipe.fromFirestore(doc)).toList();

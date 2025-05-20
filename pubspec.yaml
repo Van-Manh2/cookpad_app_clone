@@ -41,6 +41,7 @@ dependencies:
   cloud_firestore: ^5.6.7
   provider: ^6.1.5
   firebase_ui_auth: ^1.16.1
+  logging: ^1.3.0
 
 dev_dependencies:
   flutter_test:
@@ -66,13 +67,9 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/logo_cookpad1.png
-    - assets/logo_cookpad2.png
-    - assets/logo_google.png
-    - assets/logo_apple.png
-    - assets/logo_facebook.png
-    - assets/logo_email.png
-    - assets/icon_cookpad.png
+    - assets/home/
+    - assets/login_screen/
+    - assets/welcome_screen/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

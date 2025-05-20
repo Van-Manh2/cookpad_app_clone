@@ -6,6 +6,8 @@ import 'package:go_router/go_router.dart';
 class LoginScreen extends StatelessWidget {
   final authService = AuthService();
 
+  LoginScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -18,7 +20,10 @@ class LoginScreen extends StatelessWidget {
             children: [
               Column(
                 children: [
-                  Image.asset('assets/logo_cookpad2.png', height: 70),
+                  Image.asset(
+                    'assets/login_screen/logo_cookpad2.png',
+                    height: 70,
+                  ),
                   const SizedBox(height: 20),
                   Text(
                     'Đăng ký hoặc Đăng nhập',
@@ -35,7 +40,7 @@ class LoginScreen extends StatelessWidget {
               Column(
                 children: [
                   SocialButton(
-                    imagePath: 'assets/logo_google.png',
+                    imagePath: 'assets/login_screen/logo_google.png',
                     text: 'Tiếp tục với google',
                     textColor: Colors.white,
                     boxColor: Colors.black,
@@ -55,7 +60,7 @@ class LoginScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
                   SocialButton(
-                    imagePath: 'assets/logo_apple.png',
+                    imagePath: 'assets/login_screen/logo_apple.png',
                     text: 'Tiếp tục với Apple',
                     textColor: Colors.black,
                     boxColor: Colors.white,
@@ -84,7 +89,7 @@ class LoginScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 30),
                   SocialButton(
-                    imagePath: 'assets/logo_facebook.png',
+                    imagePath: 'assets/login_screen/logo_facebook.png',
                     text: 'Tiếp tục với Facebook',
                     textColor: Colors.black,
                     boxColor: Colors.white,
@@ -93,7 +98,7 @@ class LoginScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
                   SocialButton(
-                    imagePath: 'assets/logo_email.png',
+                    imagePath: 'assets/login_screen/logo_email.png',
                     text: 'Tiếp tục với email',
                     textColor: Colors.black,
                     boxColor: Colors.white,

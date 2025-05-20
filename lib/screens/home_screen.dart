@@ -1,4 +1,6 @@
+import 'package:cookpad_app_clone/models/keyword.dart';
 import 'package:cookpad_app_clone/models/recipe.dart';
+import 'package:cookpad_app_clone/services/keyword_service.dart';
 import 'package:cookpad_app_clone/services/recipe_service.dart';
 import 'package:cookpad_app_clone/widgets/bottom_nav_bar.dart';
 import 'package:cookpad_app_clone/widgets/popular_search.dart';
@@ -14,16 +16,17 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final RecipeService recipeService = RecipeService();
+  final RecipeService _recipeService = RecipeService();
+  final KeywordService _keywordService = KeywordService();
 
-  late Future<List<String>> _popularRecipes;
+  late Future<List<Keyword>> _popularKeywords;
   late Future<List<Recipe>> _recentRecipes;
 
   @override
   void initState() {
     super.initState();
-    _popularRecipes = recipeService.getPopularCategories(top: 8);
-    _recentRecipes = recipeService.getRecentlyAddedRecipes();
+    _popularKeywords = _keywordService.getPopularKeywords();
+    _recentRecipes = _recipeService.getRecentlyAddedRecipes();
   }
 
   @override
@@ -42,9 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     Row(
                       children: [
                         CircleAvatar(
-                          backgroundImage: AssetImage(
-                            'assets/icon_cookpad.png',
-                          ),
+                          backgroundImage: AssetImage('icon_cookpad.png'),
                           backgroundColor: Colors.white,
                           radius: 20,
                         ),
@@ -112,51 +113,48 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
                 const SizedBox(height: 10),
-                FutureBuilder<List<String>>(
-                  future: _popularRecipes,
+                FutureBuilder<List<Keyword>>(
+                  future: _popularKeywords,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(child: CircularProgressIndicator());
                     } else if (snapshot.hasError) {
-                      return const Center(
+                      return Center(
                         child: Text(
-                          "Lỗi dữ liệu",
+                          'Lỗi tải từ khóa: ${snapshot.error}',
                           style: TextStyle(color: Colors.white),
                         ),
                       );
                     } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                       return const Center(
                         child: Text(
-                          "Không có món nào",
+                          'Không có từ khóa nào',
                           style: TextStyle(color: Colors.white),
                         ),
                       );
-                    }
-
-                    final recipeCategories = snapshot.data!;
-                    return SizedBox(
-                      height: 300,
-                      child: GridView.builder(
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 15,
-                          mainAxisSpacing: 15,
-                          childAspectRatio: 2,
+                    } else {
+                      final keywords = snapshot.data!;
+                      return SizedBox(
+                        height: 300,
+                        child: GridView.builder(
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                crossAxisSpacing: 10,
+                                mainAxisSpacing: 10,
+                                childAspectRatio: 2,
+                              ),
+                          itemCount: keywords.length,
+                          itemBuilder: (context, index) {
+                            final keyword = keywords[index];
+                            return PopularSearch(
+                              title: keyword.title,
+                              image: keyword.image,
+                            );
+                          },
                         ),
-                        itemCount: 8,
-                        itemBuilder: (context, index) {
-                          final String category = recipeCategories[index];
-                          return Container(
-                            width: 80,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              color: Colors.white,
-                            ),
-                            child: PopularSearch(recipeCategory: category),
-                          );
-                        },
-                      ),
-                    );
+                      );
+                    }
                   },
                 ),
                 const SizedBox(height: 40),

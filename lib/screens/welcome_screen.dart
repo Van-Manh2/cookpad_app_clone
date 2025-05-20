@@ -16,7 +16,7 @@ class WelcomeScreen extends StatelessWidget {
             children: [
               Column(
                 children: [
-                  Image.asset('assets/logo_cookpad1.png', height: 250),
+                  Image.asset('assets/welcome_screen/logo_cookpad1.png', height: 250),
                   const SizedBox(height: 20),
                   const Text(
                     'Chào mừng bạn đến\nvới Cookpad!',
