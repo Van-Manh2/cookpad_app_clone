@@ -2,6 +2,7 @@ import 'package:cookpad_app_clone/models/keyword.dart';
 import 'package:cookpad_app_clone/models/recipe.dart';
 import 'package:cookpad_app_clone/services/keyword_service.dart';
 import 'package:cookpad_app_clone/services/recipe_service.dart';
+import 'package:cookpad_app_clone/utils/app_routes.dart';
 import 'package:cookpad_app_clone/widgets/bottom_nav_bar.dart';
 import 'package:cookpad_app_clone/widgets/popular_search.dart';
 import 'package:flutter/material.dart';
@@ -69,33 +70,29 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
                 const SizedBox(height: 10),
-                Container(
-                  height: 40,
-                  padding: EdgeInsets.symmetric(horizontal: 10),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(30),
-                    color: Colors.white,
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(Icons.search, color: Colors.black, size: 30),
-                      const SizedBox(width: 5),
-                      Expanded(
-                        child: TextField(
-                          textAlignVertical: TextAlignVertical.center,
-                          decoration: InputDecoration(
-                            contentPadding: EdgeInsets.only(bottom: 4),
-                            isCollapsed: true,
-                            hintText: 'Gõ vào tên các nguyên liệu...',
-                            hintStyle: TextStyle(
-                              color: Colors.grey,
-                              fontSize: 18,
-                            ),
-                            border: InputBorder.none,
+                GestureDetector(
+                  onTap: () {
+                    context.go('/home/search');
+                  },
+                  child: Container(
+                    height: 40,
+                    padding: EdgeInsets.symmetric(horizontal: 10),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(30),
+                      color: Colors.white,
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.search, color: Colors.black, size: 30),
+                        const SizedBox(width: 5),
+                        Expanded(
+                          child: Text(
+                            'Gõ vào tên các nguyên liệu...',
+                            style: TextStyle(color: Colors.grey, fontSize: 18),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
                 const SizedBox(height: 40),
@@ -192,7 +189,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       context.go('/home/search');
                     },
                     leading: Image.asset(
-                      'assets/logo_apple.png',
+                      'assets/login_screen/logo_apple.png',
                       width: 50,
                       height: 50,
                       fit: BoxFit.cover,
@@ -275,10 +272,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ),
-      ),
-      bottomNavigationBar: SizedBox(
-        height: 80,
-        child: BottomNavBar(currentIndex: 0),
       ),
     );
   }

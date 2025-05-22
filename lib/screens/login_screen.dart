@@ -21,7 +21,7 @@ class LoginScreen extends StatelessWidget {
               Column(
                 children: [
                   Image.asset(
-                    'assets/login_screen/logo_cookpad2.png',
+                    'logo_cookpad2.png',
                     height: 70,
                   ),
                   const SizedBox(height: 20),
@@ -40,7 +40,7 @@ class LoginScreen extends StatelessWidget {
               Column(
                 children: [
                   SocialButton(
-                    imagePath: 'assets/login_screen/logo_google.png',
+                    imagePath: 'logo_google.png',
                     text: 'Tiếp tục với google',
                     textColor: Colors.white,
                     boxColor: Colors.black,
@@ -60,7 +60,7 @@ class LoginScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
                   SocialButton(
-                    imagePath: 'assets/login_screen/logo_apple.png',
+                    imagePath: 'logo_apple.png',
                     text: 'Tiếp tục với Apple',
                     textColor: Colors.black,
                     boxColor: Colors.white,
@@ -89,7 +89,7 @@ class LoginScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 30),
                   SocialButton(
-                    imagePath: 'assets/login_screen/logo_facebook.png',
+                    imagePath: 'logo_facebook.png',
                     text: 'Tiếp tục với Facebook',
                     textColor: Colors.black,
                     boxColor: Colors.white,
@@ -98,7 +98,7 @@ class LoginScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
                   SocialButton(
-                    imagePath: 'assets/login_screen/logo_email.png',
+                    imagePath: 'logo_email.png',
                     text: 'Tiếp tục với email',
                     textColor: Colors.black,
                     boxColor: Colors.white,

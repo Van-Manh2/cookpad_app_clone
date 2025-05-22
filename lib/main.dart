@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-   AppLogger.init(level: Level.ALL);
+  AppLogger.init(level: Level.ALL);
   runApp(const MyApp());
 }
 

@@ -2,15 +2,45 @@ import 'package:cookpad_app_clone/screens/home_screen.dart';
 import 'package:cookpad_app_clone/screens/login_screen.dart';
 import 'package:cookpad_app_clone/screens/search_screen.dart';
 import 'package:cookpad_app_clone/screens/welcome_screen.dart';
+import 'package:cookpad_app_clone/screens/your_recipe_screen.dart';
+import 'package:cookpad_app_clone/widgets/bottom_nav_bar_layout.dart';
 import 'package:go_router/go_router.dart';
 
+class AppRoutes {
+  static const welcome = '/';
+  static const login = '/login';
+  static const home = '/home';
+}
+
 final GoRouter appRouter = GoRouter(
-  initialLocation: '/',
+  initialLocation: AppRoutes.welcome,
   routes: [
-    GoRoute(path: '/', builder: (context, state) => WelcomeScreen()),
-    GoRoute(path: '/login', builder: (context, state) => LoginScreen()),
-    GoRoute(path: '/home', builder: (context, state) => HomeScreen()),
-    GoRoute(path: '/home/search', builder: (context, state) => SearchScreen()),
-    // GoRoute(path: '/home/your-recipe', builder: (context, state) => YourRecipeScreen()),
-  ]
+    GoRoute(
+      path: AppRoutes.welcome,
+      builder: (context, state) => WelcomeScreen(),
+    ),
+    GoRoute(path: AppRoutes.login, builder: (context, state) => LoginScreen()),
+
+    ShellRoute(
+      builder:
+          (context, state, child) =>
+              BottomNavBarLayout(location: state.uri.toString(), child: child),
+      routes: [
+        GoRoute(
+          path: AppRoutes.home,
+          builder: (context, state) => const HomeScreen(),
+          routes: [
+            GoRoute(
+              path: 'search',
+              builder: (context, state) => const SearchScreen(),
+            ),
+            GoRoute(
+              path: 'your-recipe',
+              builder: (context, state) => const YourRecipeScreen(),
+            ),
+          ],
+        ),
+      ],
+    ),
+  ],
 );
