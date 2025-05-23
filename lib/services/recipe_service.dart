@@ -1,52 +1,136 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cookpad_app_clone/models/recipe.dart';
+import '../models/recipe_model.dart';
 
 class RecipeService {
-  final CollectionReference _recipeCollection = FirebaseFirestore.instance
-      .collection('recipes');
+  final CollectionReference _recipesCollection =
+      FirebaseFirestore.instance.collection('recipes');
 
-  Future<List<String>> getPopularCategories({int top = 8}) async {
-    final snapshot = await _recipeCollection.get();
+  // Create a new recipe
+  Future<void> createRecipe(RecipeModel recipe) async {
+    await _recipesCollection.add(recipe.toMap());
+  }
 
-    final Map<String, int> categorySearchCount = {};
+  // Update an existing recipe
+  Future<void> updateRecipe(String id, RecipeModel recipe) async {
+    await _recipesCollection.doc(id).update(recipe.toMap());
+  }
 
-    for (dynamic doc in snapshot.docs) {
-      final data = doc.data() as Map<String, dynamic>;
-      final category = data['category'] ?? 'Khác';
-      final searchCount = (data['searchCount'] ?? 0) as num;
+  // Delete a recipe
+  Future<void> deleteRecipe(String id) async {
+    await _recipesCollection.doc(id).delete();
+  }
 
-      categorySearchCount[category] =
-          (categorySearchCount[category] ?? 0) + searchCount.toInt();
+  // Get all recipes
+  Stream<List<RecipeModel>> getRecipes() {
+    return _recipesCollection
+        .orderBy('timestamp', descending: true)
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs
+          .map((doc) =>
+              RecipeModel.fromMap(doc.id, doc.data() as Map<String, dynamic>))
+          .toList();
+    });
+  }
+
+  // Get a single recipe by ID
+  Future<RecipeModel?> getRecipeById(String id) async {
+    final doc = await _recipesCollection.doc(id).get();
+    if (doc.exists) {
+      return RecipeModel.fromMap(doc.id, doc.data() as Map<String, dynamic>);
     }
-
-    final sortedCategories =
-        categorySearchCount.entries.toList()
-          ..sort((a, b) => b.value.compareTo(a.value));
-
-    return sortedCategories.take(top).map((e) => e.key).toList();
+    return null;
   }
 
-  Future<List<Recipe>> getRecipesOfPopularCategories({int top = 8}) async {
-    final topCategories = await getPopularCategories(top: top);
-    if (topCategories.isEmpty) return [];
-
-    final snapshot =
-        await _recipeCollection.where('category', whereIn: topCategories).get();
-
-    return snapshot.docs.map((doc) => Recipe.fromFirestore(doc)).toList();
+  // Get recipes by author
+  Stream<List<RecipeModel>> getRecipesByAuthor(String authorId) {
+    return _recipesCollection
+        .where('authorId', isEqualTo: authorId)
+        .orderBy('timestamp', descending: true)
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs
+          .map((doc) =>
+              RecipeModel.fromMap(doc.id, doc.data() as Map<String, dynamic>))
+          .toList();
+    });
   }
 
-  Future<List<Recipe>> getRecentlyAddedRecipes() async {
+  // Get public recipes
+  Stream<List<RecipeModel>> getPublicRecipes() {
+    return _recipesCollection
+        .where('isPublic', isEqualTo: true)
+        .where('status', isEqualTo: 'approved')
+        .orderBy('timestamp', descending: true)
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs
+          .map((doc) =>
+              RecipeModel.fromMap(doc.id, doc.data() as Map<String, dynamic>))
+          .toList();
+    });
+  }
+
+  // Get pending recipe requests
+  Stream<List<RecipeModel>> getPendingRecipes() {
+    return _recipesCollection
+        .where('status', isEqualTo: 'pending')
+        .orderBy('timestamp', descending: true)
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs
+          .map((doc) =>
+              RecipeModel.fromMap(doc.id, doc.data() as Map<String, dynamic>))
+          .toList();
+    });
+  }
+
+  // Update recipe status (for admin)
+  Future<void> updateRecipeStatus(String id, String status) async {
+    await _recipesCollection.doc(id).update({
+      'status': status,
+      'isPublic': status == 'approved',
+    });
+  }
+
+  // Add a comment to a recipe
+  Future<void> addComment(String recipeId, Comment comment) async {
     try {
-      final snapshot =
-          await _recipeCollection
-              .orderBy('createdAt', descending: true)
-              .limit(10)
-              .get();
-
-      return snapshot.docs.map((doc) => Recipe.fromFirestore(doc)).toList();
+      final recipe = await getRecipeById(recipeId);
+      if (recipe != null) {
+        final updatedComments = [...recipe.comments, comment];
+        await _recipesCollection.doc(recipeId).update({
+          'comments': updatedComments.map((c) => c.toMap()).toList(),
+        });
+      }
     } catch (e) {
       rethrow;
     }
+  }
+
+  // Search recipes
+  Stream<List<RecipeModel>> searchRecipes(String query) {
+    return _recipesCollection
+        .where('isPublic', isEqualTo: true)
+        .where('status', isEqualTo: 'approved')
+        .orderBy('timestamp', descending: true)
+        .snapshots()
+        .map((snapshot) {
+      final recipes = snapshot.docs
+          .map((doc) =>
+              RecipeModel.fromMap(doc.id, doc.data() as Map<String, dynamic>))
+          .toList();
+
+      return recipes.where((recipe) {
+        final name = recipe.name.toLowerCase();
+        final description = recipe.description.toLowerCase();
+        final searchQuery = query.toLowerCase();
+
+        return name.contains(searchQuery) ||
+            description.contains(searchQuery) ||
+            recipe.ingredients.any(
+                (ingredient) => ingredient.toLowerCase().contains(searchQuery));
+      }).toList();
+    });
   }
 }
