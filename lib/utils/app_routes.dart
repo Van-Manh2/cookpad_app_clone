@@ -4,7 +4,7 @@ import 'package:cookpad_app_clone/screens/login_screen.dart';
 // import 'package:cookpad_app_clone/screens/search_screen.dart';
 import 'package:cookpad_app_clone/screens/welcome_screen.dart';
 import 'package:go_router/go_router.dart';
-import '../screens//login_account_screen.dart';
+import '../screens/login_account_screen.dart';
 import '../screens/register_screen.dart';
 import '../screens/explore_page.dart';
 import '../setting/setting_page.dart';

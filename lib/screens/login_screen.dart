@@ -1,138 +1,214 @@
-import 'package:cookpad_app_clone/services/auth_service.dart';
-import 'package:cookpad_app_clone/widgets/social_button.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import '../services/auth_service.dart';
+import '../utils/validators.dart';
+import 'register_screen.dart';
+import '../widgets/social_button.dart'; // Đảm bảo bạn có file này
 
-class LoginScreen extends StatelessWidget {
-  final authService = AuthService();
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _authService = AuthService();
+  bool _isLoading = false;
+
+  Future<void> _login() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _isLoading = true);
+
+    try {
+      await _authService.loginWithEmailAndPassword(
+        _emailController.text,
+        _passwordController.text,
+      );
+      if (mounted) {
+        // Navigate to home after login success
+        Navigator.pushReplacementNamed(context, '/home');
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.toString())),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  Future<void> _loginWithGoogle() async {
+    setState(() => _isLoading = true);
+    try {
+      final userCredential = await _authService.signInGoogle();
+      if (userCredential != null) {
+        if (mounted) {
+          Navigator.pushReplacementNamed(context, '/home');
+        }
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Đăng nhập thất bại')),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Lỗi: $e')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 70),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
+      backgroundColor: const Color(0xFF232323),
+      body: Center(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 32.0),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Image.asset('assets/logo_cookpad2.png', height: 70),
-                  const SizedBox(height: 20),
-                  Text(
-                    'Đăng ký hoặc Đăng nhập',
+                  const SizedBox(height: 32),
+                  const Text(
+                    'Sign in',
                     style: TextStyle(
-                      color: Colors.grey[700],
-                      fontSize: 20,
+                      fontSize: 32,
                       fontWeight: FontWeight.bold,
+                      color: Colors.white,
                     ),
                     textAlign: TextAlign.center,
                   ),
-                ],
-              ),
-
-              Column(
-                children: [
+                  const SizedBox(height: 32),
+                  TextFormField(
+                    controller: _emailController,
+                    style: const TextStyle(color: Colors.white),
+                    decoration: const InputDecoration(
+                      prefixIcon: Icon(Icons.person, color: Colors.white70),
+                      hintText: 'Username',
+                      hintStyle: TextStyle(color: Colors.white54),
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white54),
+                      ),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.orangeAccent),
+                      ),
+                    ),
+                    validator: Validators.validateEmail,
+                  ),
+                  const SizedBox(height: 24),
+                  TextFormField(
+                    controller: _passwordController,
+                    obscureText: true,
+                    style: const TextStyle(color: Colors.white),
+                    decoration: const InputDecoration(
+                      prefixIcon: Icon(Icons.lock, color: Colors.white70),
+                      hintText: 'Password',
+                      hintStyle: TextStyle(color: Colors.white54),
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white54),
+                      ),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.orangeAccent),
+                      ),
+                    ),
+                    validator: Validators.validatePassword,
+                  ),
+                  const SizedBox(height: 8),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      onPressed: () {},
+                      child: const Text(
+                        'Forgot password?',
+                        style: TextStyle(color: Colors.white70),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  if (_isLoading)
+                    const Center(child: CircularProgressIndicator())
+                  else
+                    OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        side: const BorderSide(color: Colors.white70),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                      ),
+                      onPressed: _login,
+                      child: const Text(
+                        'LOGIN',
+                        style: TextStyle(fontSize: 18, letterSpacing: 1.2),
+                      ),
+                    ),
+                  const SizedBox(height: 16),
                   SocialButton(
                     imagePath: 'assets/logo_google.png',
-                    text: 'Tiếp tục với google',
+                    text: 'Tiếp tục với Google',
                     textColor: Colors.white,
                     boxColor: Colors.black,
                     borderColor: Colors.black,
-                    onPressed: () async {
-                      final userCredential = await authService.signInGoogle();
-                      if (userCredential != null) {
-                        // ignore: use_build_context_synchronously
-                        context.go('/home');
-                      } else {
-                        // ignore: use_build_context_synchronously
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Đăng nhập thất bại')),
-                        );
-                      }
-                    },
+                    onPressed: _loginWithGoogle,
                   ),
-                  const SizedBox(height: 20),
-                  SocialButton(
-                    imagePath: 'assets/logo_apple.png',
-                    text: 'Tiếp tục với Apple',
-                    textColor: Colors.black,
-                    boxColor: Colors.white,
-                    borderColor: Color(0xFFEEEEEE),
-                    onPressed: () {},
-                  ),
-
-                  const SizedBox(height: 15),
-ElevatedButton(
-  onPressed: () {
-    context.push('/login-account');
-  },
-  style: ElevatedButton.styleFrom(
-    backgroundColor: Colors.orange,
-    foregroundColor: Colors.white,
-    minimumSize: Size(double.infinity, 50),
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(10),
-    ),
-  ),
-  child: const Text(
-    'Đăng nhập bằng tài khoản',
-    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-  ),
-),
-
-
-                  const SizedBox(height: 30),
+                  const SizedBox(height: 16),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Expanded(
-                        child: const Divider(color: Colors.grey, thickness: 1),
+                      const Text(
+                        "Don't have an account? ",
+                        style: TextStyle(color: Colors.white70),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: Text(
-                          'hoặc',
-                          style: TextStyle(color: Colors.grey, fontSize: 15),
-                          textAlign: TextAlign.center,
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const RegisterScreen(),
+                            ),
+                          );
+                        },
+                        child: const Text(
+                          'Sign up',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            decoration: TextDecoration.underline,
+                          ),
                         ),
-                      ),
-                      Expanded(
-                        child: const Divider(color: Colors.grey, thickness: 1),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 30),
-                  SocialButton(
-                    imagePath: 'assets/logo_facebook.png',
-                    text: 'Tiếp tục với Facebook',
-                    textColor: Colors.black,
-                    boxColor: Colors.white,
-                    borderColor: Color(0xFFEEEEEE),
-                    onPressed: () {},
-                  ),
-                  const SizedBox(height: 20),
-                  SocialButton(
-                    imagePath: 'assets/logo_email.png',
-                    text: 'Tiếp tục với email',
-                    textColor: Colors.black,
-                    boxColor: Colors.white,
-                    borderColor: Color(0xFFEEEEEE),
-                    onPressed: () {},
-                  ),
-                  const SizedBox(height: 50),
-                  Text(
-                    'Khi sử dụng Cookpad, bạn đồng ý với Điều Khoản Dịch Vụ & Chính Sách Bảo Mật của chúng tôi',
-                    style: TextStyle(color: Colors.grey, fontSize: 15),
-                    textAlign: TextAlign.left,
-                  ),
+                  const SizedBox(height: 32),
                 ],
               ),
-            ],
+            ),
           ),
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
   }
 }
