@@ -1,10 +1,7 @@
-import 'package:cookpad_app_clone/models/keyword.dart';
 import 'package:cookpad_app_clone/models/recipe.dart';
-import 'package:cookpad_app_clone/services/keyword_service.dart';
 import 'package:cookpad_app_clone/services/recipe_service.dart';
 import 'package:cookpad_app_clone/utils/app_routes.dart';
-import 'package:cookpad_app_clone/widgets/bottom_nav_bar.dart';
-import 'package:cookpad_app_clone/widgets/popular_search.dart';
+import 'package:cookpad_app_clone/widgets/home_screen/popular_search.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -18,16 +15,15 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final RecipeService _recipeService = RecipeService();
-  final KeywordService _keywordService = KeywordService();
 
-  late Future<List<Keyword>> _popularKeywords;
-  late Future<List<Recipe>> _recentRecipes;
+  late Future<List<Recipe>> _popularRecipes;
 
   @override
   void initState() {
     super.initState();
-    _popularKeywords = _keywordService.getPopularKeywords();
-    _recentRecipes = _recipeService.getRecentlyAddedRecipes();
+    _popularRecipes = _recipeService.getPopularRecipes(
+      8,
+    ); // lấy 5 món phổ biến nhất
   }
 
   @override
@@ -69,10 +65,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 20),
                 GestureDetector(
                   onTap: () {
-                    context.go('/home/search');
+                    context.go('${AppRoutes.home}/search');
                   },
                   child: Container(
                     height: 40,
@@ -110,27 +106,27 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
                 const SizedBox(height: 10),
-                FutureBuilder<List<Keyword>>(
-                  future: _popularKeywords,
+                FutureBuilder<List<Recipe>>(
+                  future: _popularRecipes,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(child: CircularProgressIndicator());
                     } else if (snapshot.hasError) {
                       return Center(
                         child: Text(
-                          'Lỗi tải từ khóa: ${snapshot.error}',
+                          'Lỗi: ${snapshot.error}',
                           style: TextStyle(color: Colors.white),
                         ),
                       );
                     } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                       return const Center(
                         child: Text(
-                          'Không có từ khóa nào',
+                          'Chưa có công thức phổ biến',
                           style: TextStyle(color: Colors.white),
                         ),
                       );
                     } else {
-                      final keywords = snapshot.data!;
+                      final recipes = snapshot.data!;
                       return SizedBox(
                         height: 300,
                         child: GridView.builder(
@@ -141,12 +137,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                 mainAxisSpacing: 10,
                                 childAspectRatio: 2,
                               ),
-                          itemCount: keywords.length,
+                          itemCount: 8,
                           itemBuilder: (context, index) {
-                            final keyword = keywords[index];
-                            return PopularSearch(
-                              title: keyword.title,
-                              image: keyword.image,
+                            final recipe = recipes[index];
+                            return GestureDetector(
+                              onTap: () {},
+                              child: PopularSearch(
+                                title: recipe.name,
+                                imageUrl: recipe.imageUrl,
+                              ),
                             );
                           },
                         ),
@@ -168,7 +167,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     IconButton(
                       onPressed: () {
-                        context.go('/home/search');
+                        context.go('${AppRoutes.home}/history-search');
                       },
                       icon: Icon(
                         Icons.arrow_forward,
@@ -186,7 +185,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   child: ListTile(
                     onTap: () {
-                      context.go('/home/search');
+                      context.go('${AppRoutes.home}/search');
                     },
                     leading: Image.asset(
                       'assets/login_screen/logo_apple.png',
@@ -218,7 +217,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     IconButton(
                       onPressed: () {
-                        context.go('/home/search');
+                        context.go('${AppRoutes.home}/search');
                       },
                       icon: Icon(
                         Icons.arrow_forward,

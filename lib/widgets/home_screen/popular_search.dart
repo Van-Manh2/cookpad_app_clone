@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 class PopularSearch extends StatelessWidget {
   final String title;
-  final String? image;
+  final String? imageUrl;
 
-  const PopularSearch({super.key, required this.title, required this.image});
+  const PopularSearch({super.key, required this.title, required this.imageUrl});
 
   @override
   Widget build(BuildContext context) {
@@ -13,8 +13,8 @@ class PopularSearch extends StatelessWidget {
       child: Stack(
         children: [
           Positioned.fill(
-            child: Image.asset(
-              image != null ? 'assets/home/$image' : 'logo_cookpad1.png',
+            child: Image.network(
+              imageUrl != null ? '$imageUrl' : 'logo_cookpad1.png',
               fit: BoxFit.cover,
               errorBuilder: (context, error, stackTrace) {
                 return Image.asset('logo_cookpad1.png');

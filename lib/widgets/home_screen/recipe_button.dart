@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-class FoodButton extends StatelessWidget {
+class RecipeButton extends StatelessWidget {
   final String title;
   final String image;
   final String author;
 
-  const FoodButton({
+  const RecipeButton({
     super.key,
     required this.title,
     required this.image,
