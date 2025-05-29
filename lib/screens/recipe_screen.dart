@@ -4,6 +4,10 @@ import '../services/recipe_service.dart';
 import '../services/auth_service.dart';
 import '../widgets/recipe_form.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class RecipeScreen extends StatefulWidget {
   const RecipeScreen({super.key});
@@ -23,8 +27,15 @@ class _RecipeScreenState extends State<RecipeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading:
-            const Icon(Icons.account_circle, color: Colors.orange, size: 32),
+        leading: Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: Image.asset(
+            'assets/icon_cookpad.png',
+            width: 20,
+            height: 20,
+            color: Colors.white,
+          ),
+        ),
         title: const Text('My Recipes'),
         actions: [
           IconButton(
@@ -64,17 +75,10 @@ class _RecipeScreenState extends State<RecipeScreen> {
               return Card(
                 margin: const EdgeInsets.all(8.0),
                 child: ListTile(
-                  leading: recipe.picture.isNotEmpty
-                      ? ClipRRect(
-                          borderRadius: BorderRadius.circular(8.0),
-                          child: Image.network(
-                            recipe.picture,
-                            width: 60,
-                            height: 60,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return const Icon(Icons.restaurant, size: 40);
-                            },
+                  leading: recipe.imageUrl.isNotEmpty
+                      ? CircleAvatar(
+                          backgroundImage: NetworkImage(
+                            recipe.imageUrl,
                           ),
                         )
                       : const Icon(Icons.restaurant, size: 40),
@@ -202,23 +206,12 @@ class _RecipeScreenState extends State<RecipeScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (recipe.picture.isNotEmpty)
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(8.0),
-                        child: Image.network(
-                          recipe.picture,
-                          width: double.infinity,
-                          height: 200,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return const SizedBox(
-                              height: 200,
-                              child: Center(
-                                child: Icon(Icons.restaurant, size: 80),
-                              ),
-                            );
-                          },
-                        ),
+                    if (recipe.imageUrl.isNotEmpty)
+                      Image.network(
+                        recipe.imageUrl,
+                        height: 200,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
                       ),
                     const SizedBox(height: 16),
                     Row(
@@ -259,6 +252,62 @@ class _RecipeScreenState extends State<RecipeScreen> {
                       'Cooking Time: ${recipe.time}',
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
+                    const SizedBox(height: 8),
+                    ...[
+                      if (recipe.youtubeLink.isNotEmpty &&
+                          YoutubePlayer.convertUrlToId(recipe.youtubeLink) !=
+                              null)
+                        if (kIsWeb ||
+                            (!Platform.isWindows &&
+                                !Platform.isLinux &&
+                                !Platform.isMacOS))
+                          YoutubePlayer(
+                            controller: YoutubePlayerController(
+                              initialVideoId: YoutubePlayer.convertUrlToId(
+                                  recipe.youtubeLink)!,
+                              flags: const YoutubePlayerFlags(
+                                autoPlay: false,
+                                mute: false,
+                              ),
+                            ),
+                            showVideoProgressIndicator: true,
+                            progressIndicatorColor: Colors.red,
+                          )
+                        else
+                          TextButton.icon(
+                            icon: const Icon(Icons.ondemand_video,
+                                color: Colors.red),
+                            label: Text(
+                              recipe.youtubeLink,
+                              style: const TextStyle(
+                                color: Colors.blueAccent,
+                                decoration: TextDecoration.underline,
+                              ),
+                            ),
+                            onPressed: () {
+                              final url = Uri.parse(recipe.youtubeLink);
+                              launchUrl(url, mode: LaunchMode.platformDefault);
+                            },
+                          ),
+                      if (recipe.youtubeLink.isNotEmpty &&
+                          YoutubePlayer.convertUrlToId(recipe.youtubeLink) ==
+                              null)
+                        TextButton.icon(
+                          icon: const Icon(Icons.ondemand_video,
+                              color: Colors.red),
+                          label: Text(
+                            recipe.youtubeLink,
+                            style: const TextStyle(
+                              color: Colors.blueAccent,
+                              decoration: TextDecoration.underline,
+                            ),
+                          ),
+                          onPressed: () {
+                            final url = Uri.parse(recipe.youtubeLink);
+                            launchUrl(url, mode: LaunchMode.platformDefault);
+                          },
+                        ),
+                    ],
                     const SizedBox(height: 16),
                     Text(
                       recipe.description,
@@ -331,7 +380,7 @@ class _RecipeScreenState extends State<RecipeScreen> {
                                 Text(comment.content),
                                 const SizedBox(height: 4),
                                 Text(
-                                  comment.timestamp
+                                  comment.createdAt
                                       .toDate()
                                       .toString()
                                       .split('.')[0],
@@ -367,7 +416,7 @@ class _RecipeScreenState extends State<RecipeScreen> {
                                     userId: _authService.currentUser!.uid,
                                     userEmail: _authService.currentUser!.email!,
                                     content: _commentController.text,
-                                    timestamp: Timestamp.now(),
+                                    createdAt: Timestamp.now(),
                                   ),
                                 );
                                 _commentController.clear();

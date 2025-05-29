@@ -23,7 +23,7 @@ class RecipeService {
   // Get all recipes
   Stream<List<RecipeModel>> getRecipes() {
     return _recipesCollection
-        .orderBy('timestamp', descending: true)
+        .orderBy('createdAt', descending: true)
         .snapshots()
         .map((snapshot) {
       return snapshot.docs
@@ -46,7 +46,7 @@ class RecipeService {
   Stream<List<RecipeModel>> getRecipesByAuthor(String authorId) {
     return _recipesCollection
         .where('authorId', isEqualTo: authorId)
-        .orderBy('timestamp', descending: true)
+        .orderBy('createdAt', descending: true)
         .snapshots()
         .map((snapshot) {
       return snapshot.docs
@@ -61,7 +61,7 @@ class RecipeService {
     return _recipesCollection
         .where('isPublic', isEqualTo: true)
         .where('status', isEqualTo: 'approved')
-        .orderBy('timestamp', descending: true)
+        .orderBy('createdAt', descending: true)
         .snapshots()
         .map((snapshot) {
       return snapshot.docs
@@ -75,7 +75,7 @@ class RecipeService {
   Stream<List<RecipeModel>> getPendingRecipes() {
     return _recipesCollection
         .where('status', isEqualTo: 'pending')
-        .orderBy('timestamp', descending: true)
+        .orderBy('createdAt', descending: true)
         .snapshots()
         .map((snapshot) {
       return snapshot.docs
@@ -113,7 +113,7 @@ class RecipeService {
     return _recipesCollection
         .where('isPublic', isEqualTo: true)
         .where('status', isEqualTo: 'approved')
-        .orderBy('timestamp', descending: true)
+        .orderBy('createdAt', descending: true)
         .snapshots()
         .map((snapshot) {
       final recipes = snapshot.docs
@@ -131,6 +131,139 @@ class RecipeService {
             recipe.ingredients.any(
                 (ingredient) => ingredient.toLowerCase().contains(searchQuery));
       }).toList();
+    });
+  }
+
+  // Save a recipe for a user
+  Future<void> saveRecipe(String userId, String recipeId) async {
+    final userSavedRecipesRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('saved_recipes');
+
+    await userSavedRecipesRef.doc(recipeId).set({
+      'savedAt': Timestamp.now(),
+    });
+  }
+
+  // Remove a saved recipe for a user
+  Future<void> removeSavedRecipe(String userId, String recipeId) async {
+    final userSavedRecipesRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('saved_recipes');
+
+    await userSavedRecipesRef.doc(recipeId).delete();
+  }
+
+  // Get saved recipes for a user
+  Stream<List<RecipeModel>> getSavedRecipes(String userId) {
+    final userSavedRecipesRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('saved_recipes');
+
+    return userSavedRecipesRef.snapshots().asyncMap((snapshot) async {
+      final savedRecipeIds = snapshot.docs.map((doc) => doc.id).toList();
+      if (savedRecipeIds.isEmpty) return [];
+
+      final savedRecipes = await Future.wait(
+        savedRecipeIds.map((id) => getRecipeById(id)),
+      );
+
+      return savedRecipes.whereType<RecipeModel>().toList();
+    });
+  }
+
+  // Check if a recipe is saved by a user
+  Stream<bool> isRecipeSaved(String userId, String recipeId) {
+    final userSavedRecipesRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('saved_recipes');
+
+    return userSavedRecipesRef
+        .doc(recipeId)
+        .snapshots()
+        .map((doc) => doc.exists);
+  }
+
+  // Like a recipe
+  Future<void> likeRecipe(String userId, String recipeId) async {
+    final recipe = await getRecipeById(recipeId);
+    if (recipe == null) return;
+
+    final likes = List<String>.from(recipe.likes);
+    final dislikes = List<String>.from(recipe.dislikes);
+
+    // Remove from dislikes if exists
+    if (dislikes.contains(userId)) {
+      dislikes.remove(userId);
+    }
+
+    // Add to likes if not already liked
+    if (!likes.contains(userId)) {
+      likes.add(userId);
+    }
+
+    await _recipesCollection.doc(recipeId).update({
+      'likes': likes,
+      'dislikes': dislikes,
+    });
+  }
+
+  // Dislike a recipe
+  Future<void> dislikeRecipe(String userId, String recipeId) async {
+    final recipe = await getRecipeById(recipeId);
+    if (recipe == null) return;
+
+    final likes = List<String>.from(recipe.likes);
+    final dislikes = List<String>.from(recipe.dislikes);
+
+    // Remove from likes if exists
+    if (likes.contains(userId)) {
+      likes.remove(userId);
+    }
+
+    // Add to dislikes if not already disliked
+    if (!dislikes.contains(userId)) {
+      dislikes.add(userId);
+    }
+
+    await _recipesCollection.doc(recipeId).update({
+      'likes': likes,
+      'dislikes': dislikes,
+    });
+  }
+
+  // Remove like/dislike from a recipe
+  Future<void> removeRating(String userId, String recipeId) async {
+    final recipe = await getRecipeById(recipeId);
+    if (recipe == null) return;
+
+    final likes = List<String>.from(recipe.likes);
+    final dislikes = List<String>.from(recipe.dislikes);
+
+    likes.remove(userId);
+    dislikes.remove(userId);
+
+    await _recipesCollection.doc(recipeId).update({
+      'likes': likes,
+      'dislikes': dislikes,
+    });
+  }
+
+  // Get user's rating for a recipe
+  Stream<String?> getUserRating(String userId, String recipeId) {
+    return _recipesCollection.doc(recipeId).snapshots().map((doc) {
+      if (!doc.exists) return null;
+      final data = doc.data() as Map<String, dynamic>;
+      final likes = List<String>.from(data['likes'] ?? []);
+      final dislikes = List<String>.from(data['dislikes'] ?? []);
+
+      if (likes.contains(userId)) return 'like';
+      if (dislikes.contains(userId)) return 'dislike';
+      return null;
     });
   }
 }

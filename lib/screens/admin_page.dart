@@ -3,6 +3,7 @@ import '../services/auth_service.dart';
 import '../services/recipe_service.dart';
 import '../models/recipe_model.dart';
 import '../models/user_model.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AdminPage extends StatefulWidget {
   const AdminPage({super.key});
@@ -355,11 +356,11 @@ class _AdminPageState extends State<AdminPage>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (recipe.picture.isNotEmpty)
+                    if (recipe.imageUrl.isNotEmpty)
                       ClipRRect(
                         borderRadius: BorderRadius.circular(8.0),
                         child: Image.network(
-                          recipe.picture,
+                          recipe.imageUrl,
                           width: double.infinity,
                           height: 200,
                           fit: BoxFit.cover,
@@ -392,6 +393,30 @@ class _AdminPageState extends State<AdminPage>
                     ),
                     const SizedBox(height: 16),
                     Text(
+                      'Cooking Time: ${recipe.time}',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.white70,
+                      ),
+                    ),
+                    if (recipe.youtubeLink.isNotEmpty)
+                      TextButton.icon(
+                        icon:
+                            const Icon(Icons.ondemand_video, color: Colors.red),
+                        label: Text(
+                          recipe.youtubeLink,
+                          style: const TextStyle(
+                            color: Colors.blueAccent,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                        onPressed: () {
+                          final url = Uri.parse(recipe.youtubeLink);
+                          launchUrl(url, mode: LaunchMode.platformDefault);
+                        },
+                      ),
+                    const SizedBox(height: 16),
+                    Text(
                       'Diet Type: ${_getDietType(recipe.diet)}',
                       style: const TextStyle(
                         fontSize: 16,
@@ -399,14 +424,6 @@ class _AdminPageState extends State<AdminPage>
                       ),
                     ),
                     const SizedBox(height: 8),
-                    Text(
-                      'Cooking Time: ${recipe.time}',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        color: Colors.white70,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
                     const Text(
                       'Description',
                       style: TextStyle(
@@ -520,11 +537,11 @@ class _AdminPageState extends State<AdminPage>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (recipe.picture.isNotEmpty)
+                    if (recipe.imageUrl.isNotEmpty)
                       ClipRRect(
                         borderRadius: BorderRadius.circular(8.0),
                         child: Image.network(
-                          recipe.picture,
+                          recipe.imageUrl,
                           width: double.infinity,
                           height: 200,
                           fit: BoxFit.cover,
@@ -557,6 +574,61 @@ class _AdminPageState extends State<AdminPage>
                     ),
                     const SizedBox(height: 16),
                     Text(
+                      'Cooking Time: ${recipe.time}',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.white70,
+                      ),
+                    ),
+                    if (recipe.youtubeLink.isNotEmpty)
+                      StreamBuilder<UserModel?>(
+                        stream: _authService.currentUserModel,
+                        builder: (context, snapshot) {
+                          final user = snapshot.data;
+                          if (user == null) return const SizedBox.shrink();
+
+                          if (user.canWatchVideos) {
+                            return TextButton.icon(
+                              icon: const Icon(Icons.ondemand_video,
+                                  color: Colors.red),
+                              label: Text(
+                                recipe.youtubeLink,
+                                style: const TextStyle(
+                                  color: Colors.blueAccent,
+                                  decoration: TextDecoration.underline,
+                                ),
+                              ),
+                              onPressed: () {
+                                final url = Uri.parse(recipe.youtubeLink);
+                                launchUrl(url,
+                                    mode: LaunchMode.platformDefault);
+                              },
+                            );
+                          } else {
+                            return Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: Colors.orangeAccent.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Row(
+                                children: [
+                                  const Icon(Icons.lock,
+                                      color: Colors.orangeAccent),
+                                  const SizedBox(width: 8),
+                                  const Text(
+                                    'Upgrade to Premium to watch video',
+                                    style:
+                                        TextStyle(color: Colors.orangeAccent),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
+                        },
+                      ),
+                    const SizedBox(height: 16),
+                    Text(
                       'Diet Type: ${_getDietType(recipe.diet)}',
                       style: const TextStyle(
                         fontSize: 16,
@@ -564,14 +636,6 @@ class _AdminPageState extends State<AdminPage>
                       ),
                     ),
                     const SizedBox(height: 8),
-                    Text(
-                      'Cooking Time: ${recipe.time}',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        color: Colors.white70,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
                     const Text(
                       'Description',
                       style: TextStyle(
@@ -722,11 +786,28 @@ class _AdminPageState extends State<AdminPage>
     showDialog(
       context: context,
       builder: (context) {
-        final newRole = user.role == 'admin' ? 'user' : 'admin';
+        String newRole;
+        if (user.role == 'admin') {
+          newRole = 'user';
+        } else if (user.role == 'user') {
+          newRole = 'premium';
+        } else {
+          newRole = 'admin';
+        }
+
+        String actionText;
+        if (user.role == 'admin') {
+          actionText = 'Demote to User';
+        } else if (user.role == 'user') {
+          actionText = 'Upgrade to Premium';
+        } else {
+          actionText = 'Promote to Admin';
+        }
+
         return AlertDialog(
-          title: Text('${user.role == 'admin' ? 'Demote' : 'Promote'} User'),
+          title: Text(actionText),
           content: Text(
-              'Are you sure you want to ${user.role == 'admin' ? 'demote' : 'promote'} ${user.email} to $newRole?'),
+              'Are you sure you want to change ${user.email}\'s role to $newRole?'),
           actions: [
             TextButton(
               onPressed: () {
@@ -742,8 +823,8 @@ class _AdminPageState extends State<AdminPage>
                     Navigator.pop(context);
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text(
-                            'User ${user.role == 'admin' ? 'demoted' : 'promoted'} successfully'),
+                        content:
+                            Text('User role updated to $newRole successfully'),
                       ),
                     );
                   }
@@ -760,7 +841,7 @@ class _AdminPageState extends State<AdminPage>
                 }
               },
               child: Text(
-                user.role == 'admin' ? 'Demote' : 'Promote',
+                actionText,
                 style: TextStyle(
                     color: user.role == 'admin' ? Colors.red : Colors.green),
               ),

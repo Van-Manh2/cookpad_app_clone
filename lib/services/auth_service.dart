@@ -12,6 +12,16 @@ class AuthService {
   // Auth state changes stream
   Stream<User?> get authStateChanges => _auth.authStateChanges();
 
+  // Get current user model stream
+  Stream<UserModel?> get currentUserModel {
+    return authStateChanges.asyncMap((user) async {
+      if (user == null) return null;
+      final doc = await _firestore.collection('users').doc(user.uid).get();
+      if (!doc.exists) return null;
+      return UserModel.fromMap(doc.data()!);
+    });
+  }
+
   // Get user role
   Future<String> getUserRole() async {
     if (currentUser == null) return 'user';
