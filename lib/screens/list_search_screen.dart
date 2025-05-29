@@ -2,7 +2,7 @@ import 'package:cookpad_app_clone/models/recipe.dart';
 import 'package:cookpad_app_clone/services/recipe_service.dart';
 import 'package:cookpad_app_clone/utils/app_routes.dart';
 import 'package:cookpad_app_clone/widgets/search_screen/build_tab_selector.dart';
-import 'package:cookpad_app_clone/widgets/search_screen/newest_card.dart';
+import 'package:cookpad_app_clone/widgets/search_screen/recipe_card.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -15,9 +15,9 @@ class ListSearchScreen extends StatefulWidget {
 
 class _ListSearchScreenState extends State<ListSearchScreen> {
   late TextEditingController _controller;
-  late Future<List<Recipe>> _futureData;
   String searchQuery = '';
   int selectedIndex = 0;
+  late Future<List<Recipe>> _loadData;
 
   @override
   void initState() {
@@ -28,20 +28,18 @@ class _ListSearchScreenState extends State<ListSearchScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-
     final extra = GoRouterState.of(context).extra;
     if (extra is String) {
-      searchQuery = extra.trim();
+      searchQuery = extra.trim().toLowerCase();
       _controller.text = searchQuery;
-      _futureData = fetchRecipesByQuery();
+      _loadData = fetchRecipesByQuery();
     }
   }
 
   Future<List<Recipe>> fetchRecipesByQuery() {
     if (searchQuery.isEmpty) return Future.value([]);
-
     if (selectedIndex == 0) {
-      return RecipeService().getPopularRecipes(10);
+      return RecipeService().getNewestRecipes(10);
     } else {
       return RecipeService().getPopularRecipes(10);
     }
@@ -50,7 +48,7 @@ class _ListSearchScreenState extends State<ListSearchScreen> {
   void onTabChanged(int index) {
     setState(() {
       selectedIndex = index;
-      _futureData = fetchRecipesByQuery();
+      _loadData = fetchRecipesByQuery();
     });
   }
 
@@ -79,7 +77,7 @@ class _ListSearchScreenState extends State<ListSearchScreen> {
                         onPressed: () {
                           context.go(AppRoutes.home);
                         },
-                        icon: Icon(
+                        icon: const Icon(
                           Icons.chevron_left,
                           color: Colors.white,
                           size: 25,
@@ -102,7 +100,7 @@ class _ListSearchScreenState extends State<ListSearchScreen> {
                             onChanged: (value) {
                               setState(() {
                                 searchQuery = value.trim().toLowerCase();
-                                _futureData = fetchRecipesByQuery();
+                                _loadData = fetchRecipesByQuery();
                               });
                             },
                             textAlignVertical: TextAlignVertical.center,
@@ -114,11 +112,14 @@ class _ListSearchScreenState extends State<ListSearchScreen> {
                             cursorWidth: 1,
                             cursorHeight: 20,
                             decoration: const InputDecoration(
-                              prefixIcon: Icon(
-                                Icons.search,
-                                size: 20,
+                              hintText: 'Gõ vào tên các nguyên liệu...',
+                              hintStyle: TextStyle(
                                 color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.normal,
                               ),
+                              prefixIcon: Icon(Icons.search, size: 20),
+                              prefixIconColor: Colors.white,
                               isCollapsed: true,
                               border: InputBorder.none,
                             ),
@@ -130,21 +131,29 @@ class _ListSearchScreenState extends State<ListSearchScreen> {
                       alignment: Alignment.centerRight,
                       child: IconButton(
                         onPressed: () {},
-                        icon: Icon(Icons.tune, color: Colors.white, size: 25),
+                        icon: const Icon(
+                          Icons.tune,
+                          color: Colors.white,
+                          size: 25,
+                        ),
                       ),
                     ),
                   ],
                 ),
               ),
+
               const SizedBox(height: 20),
+
               BuildTabSelector(
                 selectedIndex: selectedIndex,
                 onTabChanged: onTabChanged,
               ),
+
               const SizedBox(height: 20),
+
               Expanded(
-                child: FutureBuilder<List<dynamic>>(
-                  future: _futureData,
+                child: FutureBuilder<List<Recipe>>(
+                  future: _loadData,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(child: CircularProgressIndicator());
@@ -152,7 +161,7 @@ class _ListSearchScreenState extends State<ListSearchScreen> {
                       return Center(
                         child: Text(
                           'Lỗi tải dữ liệu: ${snapshot.error}',
-                          style: TextStyle(color: Colors.white),
+                          style: const TextStyle(color: Colors.white),
                         ),
                       );
                     } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
@@ -164,14 +173,12 @@ class _ListSearchScreenState extends State<ListSearchScreen> {
                       );
                     }
 
-                    final newestList = snapshot.data! as List<Recipe>;
-
+                    final recipeList = snapshot.data!;
                     return ListView.builder(
-                      scrollDirection: Axis.vertical,
-                      itemCount: newestList.length,
+                      itemCount: recipeList.length,
                       itemBuilder: (context, index) {
-                        final recipe = newestList[index];
-                        return NewestCard(recipe: recipe);
+                        final recipe = recipeList[index];
+                        return RecipeCard(recipe: recipe);
                       },
                     );
                   },
