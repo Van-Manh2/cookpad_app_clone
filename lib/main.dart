@@ -1,13 +1,12 @@
-import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'services/auth_service.dart';
+import 'utils/routes.dart';
 import 'screens/login_screen.dart';
 import 'screens/admin_page.dart';
 import 'screens/main_screen.dart';
-import 'screens/welcome_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,7 +31,12 @@ class MyApp extends StatelessWidget {
             brightness: Brightness.dark,
           ),
         ),
-        home: const WelcomeScreen(),
+        initialRoute: AppRoutes.welcome,
+        routes: AppRoutes.getRoutes(),
+        onGenerateRoute: (settings) {
+          // Handle dynamic routes here if needed
+          return null;
+        },
       ),
     );
   }
@@ -59,7 +63,7 @@ class AuthWrapper extends StatelessWidget {
               }
 
               final role = roleSnapshot.data ?? 'user';
-              return role == 'admin' ? AdminPage() : MainScreen();
+              return role == 'admin' ? const AdminPage() : const MainScreen();
             },
           );
         }
@@ -71,5 +75,5 @@ class AuthWrapper extends StatelessWidget {
 }
 
 class MyAppState extends ChangeNotifier {
-  var current = WordPair.random();
+  // Add your app state management here
 }

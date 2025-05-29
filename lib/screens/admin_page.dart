@@ -308,26 +308,59 @@ class _AdminPageState extends State<AdminPage>
               Row(
                 children: [
                   CircleAvatar(
-                    backgroundColor: Colors.orangeAccent,
-                    child: Icon(Icons.person, color: Colors.white),
+                    backgroundColor: user.role == 'premium'
+                        ? Colors.amber
+                        : user.role == 'admin'
+                            ? Colors.red
+                            : Colors.orangeAccent,
+                    child: Icon(
+                        user.role == 'premium'
+                            ? Icons.star
+                            : user.role == 'admin'
+                                ? Icons.admin_panel_settings
+                                : Icons.person,
+                        color: Colors.white),
                   ),
                   const SizedBox(width: 16),
-                  Text(user.email,
-                      style:
-                          const TextStyle(fontSize: 20, color: Colors.white)),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          user.email,
+                          style: const TextStyle(
+                              fontSize: 20, color: Colors.white),
+                        ),
+                        Text(
+                          'Role: ${user.role.toUpperCase()}',
+                          style: TextStyle(
+                            color: user.role == 'premium'
+                                ? Colors.amber
+                                : user.role == 'admin'
+                                    ? Colors.red
+                                    : Colors.white70,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
-              const SizedBox(height: 16),
-              Text('Role: ${user.role}',
-                  style: const TextStyle(color: Colors.white70)),
               const SizedBox(height: 24),
               OutlinedButton(
                 style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.orangeAccent),
+                  foregroundColor:
+                      user.role == 'premium' ? Colors.red : Colors.orangeAccent,
+                ),
                 onPressed: () => _promoteUser(user),
                 child: Text(user.role == 'admin'
                     ? 'Demote to User'
-                    : 'Promote to Admin'),
+                    : user.role == 'premium'
+                        ? 'Demote to Regular User'
+                        : user.role == 'user'
+                            ? 'Upgrade to Premium'
+                            : 'Promote to Admin'),
               ),
             ],
           ),
@@ -787,20 +820,19 @@ class _AdminPageState extends State<AdminPage>
       context: context,
       builder: (context) {
         String newRole;
+        String actionText;
+
         if (user.role == 'admin') {
           newRole = 'user';
-        } else if (user.role == 'user') {
-          newRole = 'premium';
-        } else {
-          newRole = 'admin';
-        }
-
-        String actionText;
-        if (user.role == 'admin') {
           actionText = 'Demote to User';
         } else if (user.role == 'user') {
+          newRole = 'premium';
           actionText = 'Upgrade to Premium';
+        } else if (user.role == 'premium') {
+          newRole = 'user';
+          actionText = 'Demote to Regular User';
         } else {
+          newRole = 'admin';
           actionText = 'Promote to Admin';
         }
 
@@ -843,7 +875,8 @@ class _AdminPageState extends State<AdminPage>
               child: Text(
                 actionText,
                 style: TextStyle(
-                    color: user.role == 'admin' ? Colors.red : Colors.green),
+                  color: user.role == 'premium' ? Colors.red : Colors.green,
+                ),
               ),
             ),
           ],
