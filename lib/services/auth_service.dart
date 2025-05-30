@@ -83,22 +83,34 @@ class AuthService {
     }
   }
 
+  Future<UserModel?> getCurrentUser() async {
+    final currentUser = _auth.currentUser;
+    if (currentUser == null) return null;
+
+    try {
+      final doc =
+          await _firestore.collection('users').doc(currentUser.uid).get();
+      if (doc.exists && doc.data() != null) {
+        return UserModel.fromMap(doc.data()!);
+      }
+      return null;
+    } catch (e) {
+      print('Error getting current user: $e');
+      return null;
+    }
+  }
+
   Future<List<UserModel>> searchAuthors(String query, int limit) async {
     try {
       final snapshot = await _firestore.collection('users').get();
-
-      final matched =
-          snapshot.docs
-              .map((doc) => UserModel.fromMap(doc.data()))
-              .where(
-                (user) =>
-                    user.username.toLowerCase().contains(query.toLowerCase()),
-              )
-              .take(limit)
-              .toList();
-
-      return matched;
+      final lowerQuery = query.toLowerCase();
+      return snapshot.docs
+          .map((doc) => UserModel.fromMap(doc.data()))
+          .where((user) => user.username.toLowerCase().contains(lowerQuery))
+          .take(limit)
+          .toList();
     } catch (e) {
+      print('Error searching authors: $e');
       return [];
     }
   }

@@ -46,7 +46,7 @@ class Recipe {
       name: data['name'] ?? '',
       description: data['description'] ?? '',
       authorId: data['authorId'] ?? '',
-      authorName: data['authorId'] ?? '',
+      authorName: data['authorName'] ?? '',
       authorEmail: data['authorEmail'] ?? '',
       imageUrl: data['imageUrl'] ?? '',
       videoUrl: data['videoUrl'] ?? '',
@@ -57,7 +57,10 @@ class Recipe {
       ingredients: List<String>.from(data['ingredients'] ?? []),
       steps: List<String>.from(data['steps'] ?? []),
       time: data['time'] ?? '',
-      createdAt: (data['createdAt'] as Timestamp).toDate(),
+      createdAt:
+          data['createdAt'] is Timestamp
+              ? (data['createdAt'] as Timestamp).toDate()
+              : DateTime.tryParse(data['createdAt']) ?? DateTime.now(),
     );
   }
 

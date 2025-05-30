@@ -32,6 +32,5 @@ class PopularSearch extends StatelessWidget {
         ],
       ),
     );
-    ;
   }
 }

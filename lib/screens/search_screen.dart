@@ -1,5 +1,4 @@
 import 'package:cookpad_app_clone/models/recipe.dart';
-import 'package:cookpad_app_clone/models/user.dart';
 import 'package:cookpad_app_clone/services/auth_service.dart';
 import 'package:cookpad_app_clone/services/recipe_service.dart';
 import 'package:cookpad_app_clone/utils/app_routes.dart';
@@ -48,7 +47,7 @@ class _SearchScreenState extends State<SearchScreen> {
       return;
     }
 
-    final results = await widget.recipeService.getSuggestionsByQuery(query, 10);
+    final results = await widget.recipeService.searchRecipes(query);
     setState(() {
       isTyping = true;
       suggestions = results;
@@ -56,10 +55,19 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Future<void> loadSearchHistory() async {
-    final data = await widget.recipeService.getSearchHistory();
-    setState(() {
-      history = data;
-    });
+    final user = await widget.authService.getCurrentUser();
+    if (user != null) {
+      final data = await widget.recipeService.getSearchHistory(user.uid, 10);
+      print("===> History loaded: $data");
+      setState(() {
+        history = data;
+      });
+    } else {
+      print("No user logged in");
+      setState(() {
+        history = [];
+      });
+    }
   }
 
   Future<void> onSubmitted(String keyword) async {

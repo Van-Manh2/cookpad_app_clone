@@ -1,3 +1,5 @@
+import 'package:cookpad_app_clone/models/search.dart';
+import 'package:cookpad_app_clone/screens/history_search_screen.dart';
 import 'package:cookpad_app_clone/screens/home_screen.dart';
 import 'package:cookpad_app_clone/screens/list_search_screen.dart';
 import 'package:cookpad_app_clone/screens/login_screen.dart';
@@ -17,6 +19,7 @@ class AppRoutes {
 
 final recipeService = RecipeService();
 final authService = AuthService();
+late Search search;
 
 final GoRouter appRouter = GoRouter(
   initialLocation: AppRoutes.welcome,
@@ -34,7 +37,17 @@ final GoRouter appRouter = GoRouter(
       routes: [
         GoRoute(
           path: AppRoutes.home,
-          builder: (context, state) => const HomeScreen(),
+          builder: (context, state) {
+            final search =
+                state.extra as Search? ??
+                Search(
+                  id: '',
+                  userId: '',
+                  keyword: '',
+                  timestamp: DateTime.now(),
+                );
+            return HomeScreen(search: search);
+          },
           routes: [
             GoRoute(
               path: 'search',
@@ -47,6 +60,10 @@ final GoRouter appRouter = GoRouter(
             GoRoute(
               path: 'list-search',
               builder: (context, state) => ListSearchScreen(),
+            ),
+            GoRoute(
+              path: 'history-search',
+              builder: (context, state) => HistorySearchScreen(),
             ),
             GoRoute(
               path: 'your-recipe',

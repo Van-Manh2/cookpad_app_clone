@@ -39,9 +39,9 @@ class _ListSearchScreenState extends State<ListSearchScreen> {
   Future<List<Recipe>> fetchRecipesByQuery() {
     if (searchQuery.isEmpty) return Future.value([]);
     if (selectedIndex == 0) {
-      return RecipeService().getNewestRecipes(10);
+      return RecipeService().getNewestRecipesByKeyword(searchQuery, 10);
     } else {
-      return RecipeService().getPopularRecipes(10);
+      return RecipeService().getPopularRecipesByKeyword(searchQuery, 10);
     }
   }
 
@@ -95,6 +95,9 @@ class _ListSearchScreenState extends State<ListSearchScreen> {
                         ),
                         child: Center(
                           child: TextField(
+                            onTap: () {
+                              context.go('${AppRoutes.home}/search');
+                            },
                             controller: _controller,
                             autofocus: true,
                             onChanged: (value) {
