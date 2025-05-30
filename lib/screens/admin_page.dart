@@ -3,6 +3,9 @@ import '../services/auth_service.dart';
 import '../services/recipe_service.dart';
 import '../models/recipe_model.dart';
 import '../models/user_model.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+
 
 class AdminPage extends StatefulWidget {
   const AdminPage({super.key});
@@ -307,26 +310,60 @@ class _AdminPageState extends State<AdminPage>
               Row(
                 children: [
                   CircleAvatar(
-                    backgroundColor: Colors.orangeAccent,
-                    child: Icon(Icons.person, color: Colors.white),
+                    backgroundColor: user.role == 'premium'
+                        ? Colors.amber
+                        : user.role == 'admin'
+                            ? Colors.red
+                            : Colors.orangeAccent,
+                    child: Icon(
+                        user.role == 'premium'
+                            ? Icons.star
+                            : user.role == 'admin'
+                                ? Icons.admin_panel_settings
+                                : Icons.person,
+                        color: Colors.white),
                   ),
                   const SizedBox(width: 16),
-                  Text(user.email,
-                      style:
-                          const TextStyle(fontSize: 20, color: Colors.white)),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          user.email,
+                          style: const TextStyle(
+                              fontSize: 20, color: Colors.white),
+                        ),
+                        Text(
+                          'Role: ${user.role.toUpperCase()}',
+                          style: TextStyle(
+                            color: user.role == 'premium'
+                                ? Colors.amber
+                                : user.role == 'admin'
+                                    ? Colors.red
+                                    : Colors.white70,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
-              const SizedBox(height: 16),
-              Text('Role: ${user.role}',
-                  style: const TextStyle(color: Colors.white70)),
               const SizedBox(height: 24),
               OutlinedButton(
                 style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.orangeAccent),
+                  foregroundColor:
+                      user.role == 'premium' ? Colors.red : Colors.orangeAccent,
+                ),
                 onPressed: () => _promoteUser(user),
                 child: Text(user.role == 'admin'
                     ? 'Demote to User'
-                    : 'Promote to Admin'),
+                    : user.role == 'premium'
+                        ? 'Demote to Regular User'
+                        : user.role == 'user'
+                            ? 'Upgrade to Premium'
+                            : 'Promote to Admin'),
+
               ),
             ],
           ),
@@ -355,11 +392,14 @@ class _AdminPageState extends State<AdminPage>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+
+
                     if (recipe.picture.isNotEmpty)
                       ClipRRect(
                         borderRadius: BorderRadius.circular(8.0),
                         child: Image.network(
                           recipe.picture,
+
                           width: double.infinity,
                           height: 200,
                           fit: BoxFit.cover,
@@ -392,21 +432,45 @@ class _AdminPageState extends State<AdminPage>
                     ),
                     const SizedBox(height: 16),
                     Text(
+
+
                       'Diet Type: ${_getDietType(recipe.diet)}',
+
                       style: const TextStyle(
                         fontSize: 16,
                         color: Colors.white70,
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Cooking Time: ${recipe.time}',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        color: Colors.white70,
+
+                    if (recipe.youtubeLink.isNotEmpty)
+                      TextButton.icon(
+                        icon:
+                            const Icon(Icons.ondemand_video, color: Colors.red),
+                        label: Text(
+                          recipe.youtubeLink,
+                          style: const TextStyle(
+                            color: Colors.blueAccent,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                        onPressed: () {
+                          final url = Uri.parse(recipe.youtubeLink);
+                          launchUrl(url, mode: LaunchMode.platformDefault);
+                        },
                       ),
-                    ),
                     const SizedBox(height: 16),
+                    Text(
+                      'Diet Type: ${_getDietType(recipe.diet)}',
+
+                      style: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.white70,
+                      ),
+                    ),
+
+                    const SizedBox(height: 8),
+
+
                     const Text(
                       'Description',
                       style: TextStyle(
@@ -520,11 +584,13 @@ class _AdminPageState extends State<AdminPage>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+
                     if (recipe.picture.isNotEmpty)
                       ClipRRect(
                         borderRadius: BorderRadius.circular(8.0),
                         child: Image.network(
                           recipe.picture,
+ 
                           width: double.infinity,
                           height: 200,
                           fit: BoxFit.cover,
@@ -557,21 +623,75 @@ class _AdminPageState extends State<AdminPage>
                     ),
                     const SizedBox(height: 16),
                     Text(
+
+
                       'Diet Type: ${_getDietType(recipe.diet)}',
+ 
                       style: const TextStyle(
                         fontSize: 16,
                         color: Colors.white70,
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Cooking Time: ${recipe.time}',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        color: Colors.white70,
+
+                    if (recipe.youtubeLink.isNotEmpty)
+                      StreamBuilder<UserModel?>(
+                        stream: _authService.currentUserModel,
+                        builder: (context, snapshot) {
+                          final user = snapshot.data;
+                          if (user == null) return const SizedBox.shrink();
+
+                          if (user.canWatchVideos) {
+                            return TextButton.icon(
+                              icon: const Icon(Icons.ondemand_video,
+                                  color: Colors.red),
+                              label: Text(
+                                recipe.youtubeLink,
+                                style: const TextStyle(
+                                  color: Colors.blueAccent,
+                                  decoration: TextDecoration.underline,
+                                ),
+                              ),
+                              onPressed: () {
+                                final url = Uri.parse(recipe.youtubeLink);
+                                launchUrl(url,
+                                    mode: LaunchMode.platformDefault);
+                              },
+                            );
+                          } else {
+                            return Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: Colors.orangeAccent.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Row(
+                                children: [
+                                  const Icon(Icons.lock,
+                                      color: Colors.orangeAccent),
+                                  const SizedBox(width: 8),
+                                  const Text(
+                                    'Upgrade to Premium to watch video',
+                                    style:
+                                        TextStyle(color: Colors.orangeAccent),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
+                        },
                       ),
-                    ),
                     const SizedBox(height: 16),
+                    Text(
+                      'Diet Type: ${_getDietType(recipe.diet)}',
+
+                      style: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.white70,
+                      ),
+                    ),
+
+                    const SizedBox(height: 8),
+
                     const Text(
                       'Description',
                       style: TextStyle(
@@ -722,11 +842,29 @@ class _AdminPageState extends State<AdminPage>
     showDialog(
       context: context,
       builder: (context) {
-        final newRole = user.role == 'admin' ? 'user' : 'admin';
+
+        String newRole;
+        String actionText;
+
+        if (user.role == 'admin') {
+          newRole = 'user';
+          actionText = 'Demote to User';
+        } else if (user.role == 'user') {
+          newRole = 'premium';
+          actionText = 'Upgrade to Premium';
+        } else if (user.role == 'premium') {
+          newRole = 'user';
+          actionText = 'Demote to Regular User';
+        } else {
+          newRole = 'admin';
+          actionText = 'Promote to Admin';
+        }
+
         return AlertDialog(
-          title: Text('${user.role == 'admin' ? 'Demote' : 'Promote'} User'),
+          title: Text(actionText),
           content: Text(
-              'Are you sure you want to ${user.role == 'admin' ? 'demote' : 'promote'} ${user.email} to $newRole?'),
+              'Are you sure you want to change ${user.email}\'s role to $newRole?'),
+
           actions: [
             TextButton(
               onPressed: () {
@@ -742,8 +880,10 @@ class _AdminPageState extends State<AdminPage>
                     Navigator.pop(context);
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
+
                         content: Text(
                             'User ${user.role == 'admin' ? 'demoted' : 'promoted'} successfully'),
+ 
                       ),
                     );
                   }
@@ -760,9 +900,11 @@ class _AdminPageState extends State<AdminPage>
                 }
               },
               child: Text(
-                user.role == 'admin' ? 'Demote' : 'Promote',
+ 
+                actionText,
                 style: TextStyle(
-                    color: user.role == 'admin' ? Colors.red : Colors.green),
+                  color: user.role == 'premium' ? Colors.red : Colors.green,
+                ),
               ),
             ),
           ],
@@ -863,4 +1005,7 @@ class _AdminPageState extends State<AdminPage>
     _tabController.dispose();
     super.dispose();
   }
+
 }
+
+

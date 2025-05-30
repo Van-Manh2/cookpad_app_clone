@@ -10,6 +10,10 @@ class UserModel {
     this.role = 'user', // Default role is user
   });
 
+
+  bool get canWatchVideos => role == 'premium' || role == 'admin';
+
+
   Map<String, dynamic> toMap() {
     return {
       'uid': uid,

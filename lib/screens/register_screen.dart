@@ -55,17 +55,30 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF232323),
+
+      backgroundColor: const Color(0xFFF8F6FA),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: const Text('Sign up', style: TextStyle(color: Colors.black)),
+        centerTitle: false,
+      ),
       body: Center(
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 32.0),
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+
             child: Form(
               key: _formKey,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+
                   const SizedBox(height: 32),
                   const Text(
                     'Sign up',
@@ -91,6 +104,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                     ),
                     style: const TextStyle(color: Colors.white),
+
                     keyboardType: TextInputType.emailAddress,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -102,6 +116,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       return null;
                     },
                   ),
+
                   const SizedBox(height: 24),
                   TextFormField(
                     controller: _passwordController,
@@ -117,6 +132,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                     ),
                     style: const TextStyle(color: Colors.white),
+
                     obscureText: true,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -128,6 +144,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       return null;
                     },
                   ),
+
                   const SizedBox(height: 24),
                   TextFormField(
                     controller: _confirmPasswordController,
@@ -143,6 +160,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                     ),
                     style: const TextStyle(color: Colors.white),
+
                     obscureText: true,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -158,6 +176,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   if (_isLoading)
                     const Center(child: CircularProgressIndicator())
                   else
+
                     OutlinedButton(
                       style: OutlinedButton.styleFrom(
                         foregroundColor: Colors.white,
@@ -199,6 +218,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ],
                   ),
                   const SizedBox(height: 32),
+
                 ],
               ),
             ),
@@ -215,4 +235,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _confirmPasswordController.dispose();
     super.dispose();
   }
+
 }
+

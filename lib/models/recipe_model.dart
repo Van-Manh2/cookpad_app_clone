@@ -15,22 +15,29 @@ class RecipeModel {
   final bool isPublic;
   final String status; // 'pending', 'approved', 'rejected'
   final List<Comment> comments;
+  final String youtubeLink;
+  final List<String> likes;
+  final List<String> dislikes;
 
   RecipeModel({
     this.id,
     required this.name,
     required this.picture,
+
     required this.diet,
     required this.time,
     required this.description,
     required this.ingredients,
     required this.steps,
-    required this.timestamp,
+    required this.timestamp, main
     this.authorId,
     this.authorEmail,
     this.isPublic = false,
     this.status = 'pending',
     this.comments = const [],
+    this.youtubeLink = '',
+    this.likes = const [],
+    this.dislikes = const [],
   });
 
   Map<String, dynamic> toMap() {
@@ -48,6 +55,9 @@ class RecipeModel {
       'isPublic': isPublic,
       'status': status,
       'comments': comments.map((c) => c.toMap()).toList(),
+      'youtubeLink': youtubeLink,
+      'likes': likes,
+      'dislikes': dislikes,
     };
   }
 
@@ -61,7 +71,8 @@ class RecipeModel {
       description: map['description'] ?? '',
       ingredients: List<String>.from(map['ingredients'] ?? []),
       steps: List<String>.from(map['steps'] ?? []),
-      timestamp: map['timestamp'] ?? Timestamp.now(),
+
+      timestamp: map['timestamp'] ?? Timestamp.now(), 
       authorId: map['authorId'],
       authorEmail: map['authorEmail'],
       isPublic: map['isPublic'] ?? false,
@@ -70,6 +81,9 @@ class RecipeModel {
               ?.map((c) => Comment.fromMap(c as Map<String, dynamic>))
               .toList() ??
           [],
+      youtubeLink: map['youtubeLink'] ?? '',
+      likes: List<String>.from(map['likes'] ?? []),
+      dislikes: List<String>.from(map['dislikes'] ?? []),
     );
   }
 }

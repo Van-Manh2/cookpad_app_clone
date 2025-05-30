@@ -7,37 +7,60 @@ class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Future<UserCredential?> signInGoogle() async {
-    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-    if (googleUser == null) return null;
+  // Get current user
+  User? get currentUser => _auth.currentUser;
 
-    final GoogleSignInAuthentication googleAuth =
-        await googleUser.authentication;
+  // Auth state changes stream
+  Stream<User?> get authStateChanges => _auth.authStateChanges();
 
-    final credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth.accessToken,
-      idToken: googleAuth.idToken,
-    );
-
-    return await _auth.signInWithCredential(credential);
+  // Get current user model stream
+  Stream<UserModel?> get currentUserModel {
+    return authStateChanges.asyncMap((user) async {
+      if (user == null) return null;
+      final doc = await _firestore.collection('users').doc(user.uid).get();
+      if (!doc.exists) return null;
+      return UserModel.fromMap(doc.data()!);
+    });
   }
 
-  Future<void> signOut() async {
-    await GoogleSignIn().signOut();
-    await _auth.signOut();
+  // Get user role
+  Future<String> getUserRole() async {
+    if (currentUser == null) return 'user';
+    final doc =
+        await _firestore.collection('users').doc(currentUser!.uid).get();
+    if (!doc.exists) return 'user';
+    return doc.data()?['role'] ?? 'user';
   }
 
-
-  Future<UserCredential?> signInWithEmail(String email, String password) async {
-  try {
-    final credential = await FirebaseAuth.instance
-        .signInWithEmailAndPassword(email: email, password: password);
-    return credential;
-  } catch (e) {
-    print('Login error: $e');
-    return null;
+  // Get all users (admin only)
+  Stream<List<UserModel>> getAllUsers() {
+    return _firestore.collection('users').snapshots().map((snapshot) {
+      return snapshot.docs.map((doc) => UserModel.fromMap(doc.data())).toList();
+    });
   }
-}
+
+  // Register with email and password
+  Future<UserCredential> registerWithEmailAndPassword(
+      String email, String password) async {
+    try {
+      final userCredential = await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      // Create user document in Firestore
+      await _firestore.collection('users').doc(userCredential.user!.uid).set({
+        'uid': userCredential.user!.uid,
+        'email': email,
+        'role': 'user',
+      });
+
+      return userCredential;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
 
 User? get currentUser => _auth.currentUser;
 
@@ -82,6 +105,7 @@ User? get currentUser => _auth.currentUser;
     }
   }
 
+
   // Login with email and password
   Future<UserCredential> loginWithEmailAndPassword(
       String email, String password) async {
@@ -125,3 +149,6 @@ User? get currentUser => _auth.currentUser;
   }
 
 }
+
+
+
