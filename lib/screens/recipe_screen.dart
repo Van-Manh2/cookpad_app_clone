@@ -4,10 +4,13 @@ import '../services/recipe_service.dart';
 import '../services/auth_service.dart';
 import '../widgets/recipe_form.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:url_launcher/url_launcher.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart' show kIsWeb;
+
+
 
 class RecipeScreen extends StatefulWidget {
   const RecipeScreen({super.key});
@@ -27,6 +30,7 @@ class _RecipeScreenState extends State<RecipeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+
         leading: Padding(
           padding: const EdgeInsets.all(4.0),
           child: Image.asset(
@@ -36,6 +40,7 @@ class _RecipeScreenState extends State<RecipeScreen> {
             color: Colors.white,
           ),
         ),
+
         title: const Text('My Recipes'),
         actions: [
           IconButton(
@@ -75,10 +80,19 @@ class _RecipeScreenState extends State<RecipeScreen> {
               return Card(
                 margin: const EdgeInsets.all(8.0),
                 child: ListTile(
-                  leading: recipe.imageUrl.isNotEmpty
-                      ? CircleAvatar(
-                          backgroundImage: NetworkImage(
-                            recipe.imageUrl,
+
+                  leading: recipe.picture.isNotEmpty
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(8.0),
+                          child: Image.network(
+                            recipe.picture,
+                            width: 60,
+                            height: 60,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return const Icon(Icons.restaurant, size: 40);
+                            },
+
                           ),
                         )
                       : const Icon(Icons.restaurant, size: 40),
@@ -206,12 +220,25 @@ class _RecipeScreenState extends State<RecipeScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (recipe.imageUrl.isNotEmpty)
-                      Image.network(
-                        recipe.imageUrl,
-                        height: 200,
-                        width: double.infinity,
-                        fit: BoxFit.cover,
+
+                    if (recipe.picture.isNotEmpty)
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8.0),
+                        child: Image.network(
+                          recipe.picture,
+                          width: double.infinity,
+                          height: 200,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return const SizedBox(
+                              height: 200,
+                              child: Center(
+                                child: Icon(Icons.restaurant, size: 80),
+                              ),
+                            );
+                          },
+                        ),
+
                       ),
                     const SizedBox(height: 16),
                     Row(
@@ -252,6 +279,7 @@ class _RecipeScreenState extends State<RecipeScreen> {
                       'Cooking Time: ${recipe.time}',
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
+
                     const SizedBox(height: 8),
                     ...[
                       if (recipe.youtubeLink.isNotEmpty &&
@@ -308,6 +336,8 @@ class _RecipeScreenState extends State<RecipeScreen> {
                           },
                         ),
                     ],
+
+
                     const SizedBox(height: 16),
                     Text(
                       recipe.description,
@@ -380,7 +410,9 @@ class _RecipeScreenState extends State<RecipeScreen> {
                                 Text(comment.content),
                                 const SizedBox(height: 4),
                                 Text(
-                                  comment.createdAt
+
+                                  comment.timestamp
+
                                       .toDate()
                                       .toString()
                                       .split('.')[0],
@@ -416,7 +448,10 @@ class _RecipeScreenState extends State<RecipeScreen> {
                                     userId: _authService.currentUser!.uid,
                                     userEmail: _authService.currentUser!.email!,
                                     content: _commentController.text,
-                                    createdAt: Timestamp.now(),
+
+
+                                    timestamp: Timestamp.now(),
+
                                   ),
                                 );
                                 _commentController.clear();
@@ -505,4 +540,6 @@ class _RecipeScreenState extends State<RecipeScreen> {
     _commentController.dispose();
     super.dispose();
   }
+
 }
+

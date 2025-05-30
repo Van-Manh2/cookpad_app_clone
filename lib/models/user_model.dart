@@ -1,3 +1,4 @@
+
 class UserModel {
   final String uid;
   final String email;
@@ -9,7 +10,9 @@ class UserModel {
     this.role = 'user', // Default role is user
   });
 
+
   bool get canWatchVideos => role == 'premium' || role == 'admin';
+
 
   Map<String, dynamic> toMap() {
     return {

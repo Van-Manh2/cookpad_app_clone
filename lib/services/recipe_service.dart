@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../models/recipe_model.dart';
 
 class RecipeService {
@@ -10,6 +11,8 @@ class RecipeService {
     await _recipesCollection.add(recipe.toMap());
   }
 
+
+
   // Update an existing recipe
   Future<void> updateRecipe(String id, RecipeModel recipe) async {
     await _recipesCollection.doc(id).update(recipe.toMap());
@@ -19,6 +22,7 @@ class RecipeService {
   Future<void> deleteRecipe(String id) async {
     await _recipesCollection.doc(id).delete();
   }
+
 
   // Get all recipes
   Stream<List<RecipeModel>> getRecipes() {
@@ -41,6 +45,7 @@ class RecipeService {
     }
     return null;
   }
+
 
   // Get recipes by author
   Stream<List<RecipeModel>> getRecipesByAuthor(String authorId) {
@@ -103,6 +108,7 @@ class RecipeService {
           'comments': updatedComments.map((c) => c.toMap()).toList(),
         });
       }
+
     } catch (e) {
       rethrow;
     }
@@ -264,6 +270,7 @@ class RecipeService {
       if (likes.contains(userId)) return 'like';
       if (dislikes.contains(userId)) return 'dislike';
       return null;
+
     });
   }
 }

@@ -3,13 +3,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class RecipeModel {
   final String? id;
   final String name;
-  final String imageUrl;
+  final String picture;
   final int diet;
   final String time;
   final String description;
   final List<String> ingredients;
   final List<String> steps;
-  final Timestamp createdAt;
+  final Timestamp timestamp;
   final String? authorId;
   final String? authorEmail;
   final bool isPublic;
@@ -22,13 +22,14 @@ class RecipeModel {
   RecipeModel({
     this.id,
     required this.name,
-    required this.imageUrl,
+    required this.picture,
+
     required this.diet,
     required this.time,
     required this.description,
     required this.ingredients,
     required this.steps,
-    required this.createdAt,
+    required this.timestamp, main
     this.authorId,
     this.authorEmail,
     this.isPublic = false,
@@ -42,13 +43,13 @@ class RecipeModel {
   Map<String, dynamic> toMap() {
     return {
       'name': name,
-      'imageUrl': imageUrl,
+      'picture': picture,
       'diet': diet,
       'time': time,
       'description': description,
       'ingredients': ingredients,
       'steps': steps,
-      'createdAt': createdAt,
+      'timestamp': timestamp,
       'authorId': authorId,
       'authorEmail': authorEmail,
       'isPublic': isPublic,
@@ -64,13 +65,14 @@ class RecipeModel {
     return RecipeModel(
       id: id,
       name: map['name'] ?? '',
-      imageUrl: map['imageUrl'] ?? '',
+      picture: map['picture'] ?? '',
       diet: map['diet'] ?? 0,
       time: map['time'] ?? '00:00',
       description: map['description'] ?? '',
       ingredients: List<String>.from(map['ingredients'] ?? []),
       steps: List<String>.from(map['steps'] ?? []),
-      createdAt: map['createdAt'] ?? Timestamp.now(),
+
+      timestamp: map['timestamp'] ?? Timestamp.now(), 
       authorId: map['authorId'],
       authorEmail: map['authorEmail'],
       isPublic: map['isPublic'] ?? false,
@@ -90,13 +92,13 @@ class Comment {
   final String userId;
   final String userEmail;
   final String content;
-  final Timestamp createdAt;
+  final Timestamp timestamp;
 
   Comment({
     required this.userId,
     required this.userEmail,
     required this.content,
-    required this.createdAt,
+    required this.timestamp,
   });
 
   Map<String, dynamic> toMap() {
@@ -104,7 +106,7 @@ class Comment {
       'userId': userId,
       'userEmail': userEmail,
       'content': content,
-      'createdAt': createdAt,
+      'timestamp': timestamp,
     };
   }
 
@@ -113,7 +115,7 @@ class Comment {
       userId: map['userId'] ?? '',
       userEmail: map['userEmail'] ?? '',
       content: map['content'] ?? '',
-      createdAt: map['createdAt'] ?? Timestamp.now(),
+      timestamp: map['timestamp'] ?? Timestamp.now(),
     );
   }
 }

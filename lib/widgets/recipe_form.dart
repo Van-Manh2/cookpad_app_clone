@@ -22,7 +22,9 @@ class RecipeForm extends StatefulWidget {
 class _RecipeFormState extends State<RecipeForm> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
-  final _imageUrlController = TextEditingController();
+
+  final _pictureController = TextEditingController();
+
   final _descriptionController = TextEditingController();
   final List<TextEditingController> _ingredientControllers = [
     TextEditingController()
@@ -33,18 +35,21 @@ class _RecipeFormState extends State<RecipeForm> {
   int _diet = 0;
   String _time = '00:00';
   final AuthService _authService = AuthService();
+
   final _youtubeLinkController = TextEditingController();
+
 
   @override
   void initState() {
     super.initState();
     if (widget.initialRecipe != null) {
       _nameController.text = widget.initialRecipe!.name;
-      _imageUrlController.text = widget.initialRecipe!.imageUrl;
+
+      _pictureController.text = widget.initialRecipe!.picture;
       _descriptionController.text = widget.initialRecipe!.description;
       _diet = widget.initialRecipe!.diet;
       _time = widget.initialRecipe!.time;
-      _youtubeLinkController.text = widget.initialRecipe!.youtubeLink;
+
 
       _ingredientControllers.clear();
       for (var ingredient in widget.initialRecipe!.ingredients) {
@@ -108,11 +113,13 @@ class _RecipeFormState extends State<RecipeForm> {
               },
             ),
             TextFormField(
-              controller: _imageUrlController,
-              decoration: const InputDecoration(labelText: 'Image URL'),
+
+              controller: _pictureController,
+              decoration: const InputDecoration(labelText: 'Picture URL'),
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please enter an image URL';
+                  return 'Please enter a picture URL';
+
                 }
                 return null;
               },
@@ -128,10 +135,12 @@ class _RecipeFormState extends State<RecipeForm> {
                 return null;
               },
             ),
+
             TextFormField(
               controller: _youtubeLinkController,
               decoration: const InputDecoration(labelText: 'YouTube Link'),
             ),
+
             const SizedBox(height: 16),
             DropdownButtonFormField<int>(
               value: _diet,
@@ -238,7 +247,9 @@ class _RecipeFormState extends State<RecipeForm> {
                 if (_formKey.currentState!.validate()) {
                   final recipe = RecipeModel(
                     name: _nameController.text,
-                    imageUrl: _imageUrlController.text,
+
+                    picture: _pictureController.text,
+
                     diet: _diet,
                     time: _time,
                     description: _descriptionController.text,
@@ -248,11 +259,13 @@ class _RecipeFormState extends State<RecipeForm> {
                     steps: _stepControllers
                         .map((controller) => controller.text)
                         .toList(),
+
                     createdAt: Timestamp.fromDate(DateTime.now()),
                     status: widget.isRequest ? 'pending' : 'approved',
                     authorId: _authService.currentUser?.uid,
                     authorEmail: _authService.currentUser?.email,
                     youtubeLink: _youtubeLinkController.text,
+
                   );
                   widget.onSubmit(recipe);
                 }
@@ -268,7 +281,9 @@ class _RecipeFormState extends State<RecipeForm> {
   @override
   void dispose() {
     _nameController.dispose();
-    _imageUrlController.dispose();
+
+    _pictureController.dispose();
+
     _descriptionController.dispose();
     for (var controller in _ingredientControllers) {
       controller.dispose();
@@ -276,6 +291,7 @@ class _RecipeFormState extends State<RecipeForm> {
     for (var controller in _stepControllers) {
       controller.dispose();
     }
+
     _youtubeLinkController.dispose();
     super.dispose();
   }

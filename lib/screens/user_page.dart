@@ -6,6 +6,7 @@ import '../models/recipe_model.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../models/user_model.dart';
 
+
 class UserPage extends StatefulWidget {
   const UserPage({super.key});
 
@@ -13,14 +14,17 @@ class UserPage extends StatefulWidget {
   State<UserPage> createState() => _UserPageState();
 }
 
+
 class _UserPageState extends State<UserPage>
     with SingleTickerProviderStateMixin {
+
   final AuthService _authService = AuthService();
   final RecipeService _recipeService = RecipeService();
   final TextEditingController _searchController = TextEditingController();
   final TextEditingController _commentController = TextEditingController();
   String _searchQuery = '';
   int _selectedDietType = -1; // -1 represents "All" or default
+
   late TabController _tabController;
 
   @override
@@ -29,10 +33,12 @@ class _UserPageState extends State<UserPage>
     _tabController = TabController(length: 2, vsync: this);
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+
         leading: Padding(
           padding: const EdgeInsets.all(4.0),
           child: Image.asset(
@@ -65,6 +71,8 @@ class _UserPageState extends State<UserPage>
               return const SizedBox.shrink();
             },
           ),
+
+      
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () => _authService.logout(),
@@ -430,6 +438,7 @@ class _UserPageState extends State<UserPage>
           );
         },
       ),
+
     );
   }
 
@@ -450,6 +459,7 @@ class _UserPageState extends State<UserPage>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+
                     if (recipe.imageUrl.isNotEmpty)
                       Image.network(
                         recipe.imageUrl,
@@ -527,6 +537,7 @@ class _UserPageState extends State<UserPage>
                           },
                         ),
                       ],
+
                     ),
                     const SizedBox(height: 8),
                     Text(
@@ -534,6 +545,7 @@ class _UserPageState extends State<UserPage>
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                     const SizedBox(height: 8),
+ 
                     Row(
                       children: [
                         StreamBuilder<String?>(
@@ -696,6 +708,8 @@ class _UserPageState extends State<UserPage>
                         },
                       ),
                     const SizedBox(height: 8),
+
+
                     Text(
                       'Cooking Time: ${recipe.time}',
                       style: Theme.of(context).textTheme.titleMedium,
@@ -772,7 +786,10 @@ class _UserPageState extends State<UserPage>
                                 Text(comment.content),
                                 const SizedBox(height: 4),
                                 Text(
-                                  comment.createdAt
+
+
+                                  comment.timestamp
+
                                       .toDate()
                                       .toString()
                                       .split('.')[0],
@@ -809,7 +826,9 @@ class _UserPageState extends State<UserPage>
                                       userEmail:
                                           _authService.currentUser!.email!,
                                       content: _commentController.text,
-                                      createdAt: Timestamp.now(),
+
+                                      timestamp: Timestamp.now(),
+
                                     ),
                                   );
                                   _commentController.clear();
@@ -869,6 +888,7 @@ class _UserPageState extends State<UserPage>
   void dispose() {
     _searchController.dispose();
     _commentController.dispose();
+
     _tabController.dispose();
     super.dispose();
   }

@@ -5,6 +5,8 @@ import '../models/recipe_model.dart';
 import '../models/user_model.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+
+
 class AdminPage extends StatefulWidget {
   const AdminPage({super.key});
 
@@ -361,6 +363,7 @@ class _AdminPageState extends State<AdminPage>
                         : user.role == 'user'
                             ? 'Upgrade to Premium'
                             : 'Promote to Admin'),
+
               ),
             ],
           ),
@@ -389,11 +392,14 @@ class _AdminPageState extends State<AdminPage>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (recipe.imageUrl.isNotEmpty)
+
+
+                    if (recipe.picture.isNotEmpty)
                       ClipRRect(
                         borderRadius: BorderRadius.circular(8.0),
                         child: Image.network(
-                          recipe.imageUrl,
+                          recipe.picture,
+
                           width: double.infinity,
                           height: 200,
                           fit: BoxFit.cover,
@@ -426,12 +432,16 @@ class _AdminPageState extends State<AdminPage>
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'Cooking Time: ${recipe.time}',
+
+
+                      'Diet Type: ${_getDietType(recipe.diet)}',
+
                       style: const TextStyle(
                         fontSize: 16,
                         color: Colors.white70,
                       ),
                     ),
+
                     if (recipe.youtubeLink.isNotEmpty)
                       TextButton.icon(
                         icon:
@@ -451,12 +461,16 @@ class _AdminPageState extends State<AdminPage>
                     const SizedBox(height: 16),
                     Text(
                       'Diet Type: ${_getDietType(recipe.diet)}',
+
                       style: const TextStyle(
                         fontSize: 16,
                         color: Colors.white70,
                       ),
                     ),
+
                     const SizedBox(height: 8),
+
+
                     const Text(
                       'Description',
                       style: TextStyle(
@@ -570,11 +584,13 @@ class _AdminPageState extends State<AdminPage>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (recipe.imageUrl.isNotEmpty)
+
+                    if (recipe.picture.isNotEmpty)
                       ClipRRect(
                         borderRadius: BorderRadius.circular(8.0),
                         child: Image.network(
-                          recipe.imageUrl,
+                          recipe.picture,
+ 
                           width: double.infinity,
                           height: 200,
                           fit: BoxFit.cover,
@@ -607,12 +623,16 @@ class _AdminPageState extends State<AdminPage>
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'Cooking Time: ${recipe.time}',
+
+
+                      'Diet Type: ${_getDietType(recipe.diet)}',
+ 
                       style: const TextStyle(
                         fontSize: 16,
                         color: Colors.white70,
                       ),
                     ),
+
                     if (recipe.youtubeLink.isNotEmpty)
                       StreamBuilder<UserModel?>(
                         stream: _authService.currentUserModel,
@@ -663,12 +683,15 @@ class _AdminPageState extends State<AdminPage>
                     const SizedBox(height: 16),
                     Text(
                       'Diet Type: ${_getDietType(recipe.diet)}',
+
                       style: const TextStyle(
                         fontSize: 16,
                         color: Colors.white70,
                       ),
                     ),
+
                     const SizedBox(height: 8),
+
                     const Text(
                       'Description',
                       style: TextStyle(
@@ -819,6 +842,7 @@ class _AdminPageState extends State<AdminPage>
     showDialog(
       context: context,
       builder: (context) {
+
         String newRole;
         String actionText;
 
@@ -840,6 +864,7 @@ class _AdminPageState extends State<AdminPage>
           title: Text(actionText),
           content: Text(
               'Are you sure you want to change ${user.email}\'s role to $newRole?'),
+
           actions: [
             TextButton(
               onPressed: () {
@@ -855,8 +880,10 @@ class _AdminPageState extends State<AdminPage>
                     Navigator.pop(context);
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content:
-                            Text('User role updated to $newRole successfully'),
+
+                        content: Text(
+                            'User ${user.role == 'admin' ? 'demoted' : 'promoted'} successfully'),
+ 
                       ),
                     );
                   }
@@ -873,6 +900,7 @@ class _AdminPageState extends State<AdminPage>
                 }
               },
               child: Text(
+ 
                 actionText,
                 style: TextStyle(
                   color: user.role == 'premium' ? Colors.red : Colors.green,
@@ -977,4 +1005,7 @@ class _AdminPageState extends State<AdminPage>
     _tabController.dispose();
     super.dispose();
   }
+
 }
+
+

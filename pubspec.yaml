@@ -12,13 +12,22 @@ dependencies:
   flutter:
     sdk: flutter
 
-  english_words: ^4.0.0
+
+  # The following adds the Cupertino Icons font to your application.
+  # Use with the CupertinoIcons class for iOS style icons.
+  cupertino_icons: ^1.0.8
+  firebase_auth: ^5.5.3
+  cloud_firestore: ^5.6.7       # hoặc phiên bản mới nhất
+  firebase_storage: ^12.4.5    # hoặc phiên bản mới nhất
+  image_picker: ^1.1.2       # hoặc phiên bản mới nhất
+  firebase_core: ^3.13.0
+  go_router: ^15.1.2
+  google_sign_in: ^6.3.0
   provider: ^6.1.2
-  firebase_core: ^3.13.1
-  firebase_auth: ^5.5.4
-  cloud_firestore: ^5.6.8
-  url_launcher: ^6.2.6
+  english_words: ^4.0.0
   youtube_player_flutter: ^8.1.2
+  url_launcher: ^6.2.6
+
 
 dev_dependencies:
   flutter_test:

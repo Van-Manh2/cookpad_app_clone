@@ -1,3 +1,5 @@
+
+import 'package:english_words/english_words.dart'; main
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -24,6 +26,8 @@ class MyApp extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (context) => MyAppState(),
       child: MaterialApp(
+
+        debugShowCheckedModeBanner: false,
         title: 'Namer App',
         theme: ThemeData.dark().copyWith(
           colorScheme: ColorScheme.fromSeed(
@@ -64,6 +68,7 @@ class AuthWrapper extends StatelessWidget {
 
               final role = roleSnapshot.data ?? 'user';
               return role == 'admin' ? const AdminPage() : const MainScreen();
+
             },
           );
         }
@@ -75,5 +80,7 @@ class AuthWrapper extends StatelessWidget {
 }
 
 class MyAppState extends ChangeNotifier {
-  // Add your app state management here
+
+  var current = WordPair.random();
 }
+
